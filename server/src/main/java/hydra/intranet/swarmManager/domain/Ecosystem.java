@@ -35,8 +35,8 @@ public class Ecosystem implements Serializable {
 	private boolean markedAsRemove;
 
 	@Builder.Default
-	private List<String> markedMessage = new ArrayList();
-	
+	private Set<String> markedMessage = new HashSet();
+
 	private boolean isOverloaded;
 
 	@Builder.Default
@@ -48,7 +48,7 @@ public class Ecosystem implements Serializable {
 	private Set<Pool> pools = new HashSet<>();
 
 	@Builder.Default
-	private Map<String, List<String>> labels = new HashMap<>();
+	private Map<String, Set<String>> labels = new HashMap<>();
 
 	public Ecosystem addRemoveMessage(String msg) {
 		markedAsRemove = true;
@@ -81,11 +81,21 @@ public class Ecosystem implements Serializable {
 
 	public Ecosystem addLabel(String key, String value) {
 		if (!labels.containsKey(key)) {
-			labels.put(key, new ArrayList<>());
+			labels.put(key, new HashSet<String>());
 		}
 		if (!labels.get(key).contains(value)) {
 			labels.get(key).add(value);
 		}
 		return this;
+	}
+
+	public String getLastLabel(String labelKey) {
+		String result = null;
+		if (labels.containsKey(labelKey)) {
+			for (String value : labels.get(labelKey)) {
+				result = value;
+			}
+		}
+		return result;
 	}
 }

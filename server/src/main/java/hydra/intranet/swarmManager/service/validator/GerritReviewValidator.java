@@ -24,8 +24,8 @@ public class GerritReviewValidator extends AbstractValidator {
 		if (configService.isTrue("GERRIT_CHECK")) {
 			final String labelKey = configService.getString("GERRIT_REVIEW_LABEL_NAME");
 			if (eco.getLabels().containsKey(labelKey)) {
-				eco.setReview(gerritRepo.getChange(eco.getLabels().get(labelKey).get(0)));
-
+				final String reviewId = eco.getLastLabel(labelKey);
+				eco.setReview(gerritRepo.getChange(reviewId));
 				if (eco.getReview() != null) {
 					if (CLOSED_STATE.contains(eco.getReview().status)) {
 						markIf(eco, "Review is closed", "GERRIT_REMOVE_ECOSYSTEM_IF_CLOSED");

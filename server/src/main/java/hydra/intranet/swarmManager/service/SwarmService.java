@@ -1,15 +1,20 @@
 package hydra.intranet.swarmManager.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -23,7 +28,10 @@ import com.github.dockerjava.core.DockerClientConfig;
 import com.google.common.base.Optional;
 
 import hydra.intranet.swarmManager.domain.Ecosystem;
+import hydra.intranet.swarmManager.domain.Pool;
+import hydra.intranet.swarmManager.event.EcosystemRemoved;
 import hydra.intranet.swarmManager.service.detector.IDetector;
+import hydra.intranet.swarmManager.service.task.SwarmCollectTask;
 import hydra.intranet.swarmManager.service.validator.IEcosystemValidator;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,23 +51,51 @@ public class SwarmService {
 
 	private Collection<Ecosystem> ecosystems = new ArrayList<>();
 
-	@PostConstruct
-	public void init() {
-		final DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().withDockerHost("unix:///var/run/docker.sock")
-				.withDockerConfig("/home/barnabas/.docker").build();
-		client = DockerClientBuilder.getInstance(config).build();
-	}
+	@Autowired
+	private ConfigService configService;
 
-	@Scheduled(fixedDelay = 10000)
-	public void scheduler() {
-		ecosystems = collectEcosystems();
+	@Autowired
+	private PoolService poolService;
+
+	@Autowired
+	private ThreadPoolTaskScheduler taskScheduler;
+
+	@Autowired
+	private ApplicationEventPublisher applicationEventPublisher;
+
+	@EventListener(ApplicationReadyEvent.class)
+	public void doSomethingAfterStartup() {
+		final DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().withDockerHost(configService.getString("DOCKER_HOST")).build();
+		client = DockerClientBuilder.getInstance(config).build();
+
+		final Trigger nextTrigger = triggerContext -> {
+			final Calendar nextExecutionTime = new GregorianCalendar();
+			final Date lastActualExecutionTime = triggerContext.lastActualExecutionTime();
+			nextExecutionTime.setTime(lastActualExecutionTime != null ? lastActualExecutionTime : new Date());
+			nextExecutionTime.add(Calendar.SECOND, Math.toIntExact(configService.getLong("CHECK_FIXED_DELAY_IN_SEC")));
+			return nextExecutionTime.getTime();
+		};
+		taskScheduler.schedule(new SwarmCollectTask(this), nextTrigger);
 	}
 
 	public Collection<Ecosystem> getEcosystems() {
 		return ecosystems;
 	}
 
-	private Collection<Ecosystem> collectEcosystems() {
+	public Collection<Ecosystem> getEcosystems(final String poolId) {
+		final Collection<Ecosystem> ecosystems = new ArrayList<>();
+		final Optional<Pool> maybePool = poolService.getPool(poolId);
+		if (maybePool.isPresent()) {
+			ecosystems.addAll(getEcosystems(maybePool.get()));
+		}
+		return ecosystems;
+	}
+
+	public Collection<Ecosystem> getEcosystems(final Pool pool) {
+		return getEcosystems().stream().filter(e -> e.getPools().equals(pool)).collect(Collectors.toList());
+	}
+
+	public Collection<Ecosystem> collectEcosystems() {
 		final long start = System.currentTimeMillis();
 		final Collection<Ecosystem> ecosystems = collectRawEcosystems();
 
@@ -74,11 +110,30 @@ public class SwarmService {
 		});
 
 		log.info("Ecosystem collected in {} millisec", (System.currentTimeMillis() - start));
+
+		this.ecosystems = ecosystems;
 		return ecosystems;
 	}
 
 	public Collection<SwarmNode> getNodes() {
 		return client.listSwarmNodesCmd().exec();
+	}
+
+	public String getJoinToken() {
+		return client.joinSwarmCmd().getJoinToken();
+	}
+
+	public void removeEcosystem(final Ecosystem ecosystem) {
+		if (configService.isTrue("EXEC_REMOVE_COMMAND")) {
+			final String rmCommand = ecosystem.isStack() ? "docker stack rm " + ecosystem.getName() : "docker service rm " + ecosystem.getName();
+			try {
+				log.info("Remove ecosystem: {}", ecosystem.getName());
+				Runtime.getRuntime().exec(rmCommand);
+				applicationEventPublisher.publishEvent(new EcosystemRemoved(this, ecosystem));
+			} catch (final Exception e) {
+				log.error("Error in remove command", e);
+			}
+		}
 	}
 
 	private Collection<Ecosystem> collectRawEcosystems() {

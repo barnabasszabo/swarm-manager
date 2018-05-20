@@ -1,8 +1,8 @@
 package hydra.intranet.swarmManager.service.validator;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ public class PoolValidator extends AbstractValidator {
 	public void calculate(final Ecosystem eco) {
 		final Collection<Pool> activePools = poolService.getActivePools();
 		activePools.forEach(p -> {
-			final Map<String, List<String>> labels = eco.getLabels();
+			final Map<String, Set<String>> labels = eco.getLabels();
 			final String poolLabelKey = configService.getString("POOL_LABEL_KEY");
 			if (labels.containsKey(poolLabelKey)) {
 				labels.get(poolLabelKey).forEach(l -> {

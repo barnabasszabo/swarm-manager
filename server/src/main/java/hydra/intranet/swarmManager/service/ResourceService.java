@@ -67,12 +67,13 @@ public class ResourceService {
 		final SwarmResource ws = SwarmResource.builder().build();
 		final SwarmResource total = getTotalSwarmResources();
 
-		final Long workspacePercent = 100 - (configService.getLong("SYSMTEM_STANDBY_PERCENT") + configService.getLong("RESOURCE_GAP_PERCENT"));
+		final Long workspaceCpuPercent = 100 - (configService.getLong("SYSMTEM_STANDBY_PERCENT") + configService.getLong("CPU_LIMIT_RESERVED_GAP_IN_PERCENT"));
+		final Long workspaceMemoryPercent = 100 - (configService.getLong("SYSMTEM_STANDBY_PERCENT") + configService.getLong("MEMORY_LIMIT_RESERVED_GAP_IN_PERCENT"));
 
-		ws.addLimitCpu((total.getLimitCpu() / 100) * workspacePercent);
+		ws.addLimitCpu((total.getLimitCpu() / 100) * workspaceCpuPercent);
 		ws.addReservedCpu(ws.getLimitCpu());
 
-		ws.addLimitMemory((total.getLimitMemory() / 100) * workspacePercent);
+		ws.addLimitMemory((total.getLimitMemory() / 100) * workspaceMemoryPercent);
 		ws.addReservedMemory(ws.getLimitMemory());
 
 		return ws;

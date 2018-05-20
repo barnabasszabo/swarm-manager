@@ -25,6 +25,8 @@ public class Config implements Serializable {
 
 	@NotNull
 	private String value;
+	
+	private String description;
 
 	@Builder.Default
 	private ConfigType type = ConfigType.STRING;
