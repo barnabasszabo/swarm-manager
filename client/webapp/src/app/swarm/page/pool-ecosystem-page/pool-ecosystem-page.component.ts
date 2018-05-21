@@ -5,6 +5,7 @@ import { Pool } from '../../model/Pool';
 import { Ecosystem } from '../../model/Ecosystem';
 
 import * as _ from 'lodash';
+import { LinkGroup } from '../../model/LinkGroup';
 
 @Component({
   selector: 'app-pool-ecosystem-page',
@@ -14,6 +15,9 @@ import * as _ from 'lodash';
 export class PoolEcosystemPageComponent {
 
   pool: Pool;
+  poolLinkGroup: LinkGroup[];
+  poolLinkGroupJSON = '';
+  poolLinkGroupDisplay = false;
   ecosystems: Ecosystem[];
   host = window.location.hostname;
 
@@ -31,12 +35,19 @@ export class PoolEcosystemPageComponent {
   };
 
   private ecoRefreshInterval;
+  private linkRefreshInterval;
 
   constructor(private route: ActivatedRoute, private swarmService: SwarmService) {
     route.params.subscribe(val => {
       if (val.id !== 'all') {
         this.swarmService.getPool(val.id).subscribe(poolData => {
           this.pool = poolData;
+
+          clearInterval(this.linkRefreshInterval);
+          this.linkRefreshInterval = setInterval(() => {
+            this.refreshPoolLink();
+          }, 5000);
+          this.refreshPoolLink();
 
           clearInterval(this.ecoRefreshInterval);
           this.ecoRefreshInterval = setInterval(() => {
@@ -48,7 +59,7 @@ export class PoolEcosystemPageComponent {
     });
   }
 
-  refreshEcosystem() {
+  refreshEcosystem(): void {
     console.log('Collecting ecosystems for ' + this.pool.displayName);
 
     this.swarmService.getEcosystems(this.pool.id).subscribe(newEcosystems => {
@@ -57,6 +68,14 @@ export class PoolEcosystemPageComponent {
         this.ecosystems = newEcosystems;
         this.refreshChart();
         console.log('New ecosystems are ', this.ecosystems);
+      }
+    });
+  }
+
+  refreshPoolLink(): void {
+    this.swarmService.getPoolLink(this.pool.id).subscribe(data => {
+      if (!_.isEqual(data, this.poolLinkGroup)) {
+        this.poolLinkGroup = data;
       }
     });
   }
@@ -114,6 +133,29 @@ export class PoolEcosystemPageComponent {
         ]
       };
     });
+  }
+
+  editLinks(): void {
+    this.poolLinkGroupDisplay = true;
+    this.poolLinkGroupJSON = JSON.stringify(this.poolLinkGroup, null, 4);
+  }
+
+  isLinksInvalid(): boolean {
+    try {
+      JSON.parse(this.poolLinkGroupJSON);
+      return false;
+    } catch (e) {
+      return true;
+    }
+  }
+  saveNewLinks(): void {
+    this.poolLinkGroupDisplay = false;
+    try {
+      const newLinks = JSON.parse(this.poolLinkGroupJSON);
+      this.swarmService.setPoolLink(this.pool.id, newLinks).subscribe(data => {
+        this.refreshPoolLink();
+      });
+    } catch (e) { }
   }
 
 }

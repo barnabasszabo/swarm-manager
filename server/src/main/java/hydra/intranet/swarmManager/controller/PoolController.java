@@ -5,11 +5,14 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.base.Optional;
 
 import hydra.intranet.swarmManager.domain.Ecosystem;
+import hydra.intranet.swarmManager.domain.LinkGroup;
 import hydra.intranet.swarmManager.domain.Pool;
 import hydra.intranet.swarmManager.domain.PoolResource;
 import hydra.intranet.swarmManager.service.PoolService;
@@ -42,6 +45,16 @@ public class PoolController extends BaseController {
 	@GetMapping("/pool/{id}/resource")
 	public PoolResource getPoolResource(@PathVariable("id") final String poolId) {
 		return resourceService.getPoolResource(poolId);
+	}
+
+	@GetMapping("/pool/{id}/link")
+	public Collection<LinkGroup> getPoolLink(@PathVariable("id") final String poolId) {
+		return poolService.getLinkGroups(poolId);
+	}
+
+	@PostMapping("/pool/{id}/link")
+	public Collection<LinkGroup> setPoolLink(@PathVariable("id") final String poolId, @RequestBody final Collection<LinkGroup> links) {
+		return poolService.saveLinkGroups(poolId, links);
 	}
 
 	@GetMapping("/pool/{id}/ecosystem")

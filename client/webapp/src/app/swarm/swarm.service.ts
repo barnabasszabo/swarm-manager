@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Pool } from './model/Pool';
 import { Ecosystem } from './model/Ecosystem';
 import { PoolResource } from './model/PoolResource';
+import { LinkGroup } from './model/LinkGroup';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,14 @@ export class SwarmService {
 
   getPoolResource(poolId: string): Observable<PoolResource> {
     return this.http.get<PoolResource>('/api/pool/' + poolId + '/resource');
+  }
+
+  getPoolLink(poolId: string): Observable<LinkGroup[]> {
+    return this.http.get<LinkGroup[]>('/api/pool/' + poolId + '/link');
+  }
+
+  setPoolLink(poolId: string, links: LinkGroup[]): Observable<LinkGroup[]> {
+    return this.http.post<LinkGroup[]>('/api/pool/' + poolId + '/link', links);
   }
 
   getEcosystems(poolId: string): Observable<Ecosystem[]> {

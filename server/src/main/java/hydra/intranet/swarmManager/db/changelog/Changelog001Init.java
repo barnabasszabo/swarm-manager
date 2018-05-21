@@ -1,10 +1,15 @@
 package hydra.intranet.swarmManager.db.changelog;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
 
 import hydra.intranet.swarmManager.domain.Config;
 import hydra.intranet.swarmManager.domain.ConfigType;
+import hydra.intranet.swarmManager.domain.Link;
+import hydra.intranet.swarmManager.domain.LinkGroup;
 import hydra.intranet.swarmManager.domain.Pool;
 
 @ChangeLog(order = "001")
@@ -93,10 +98,23 @@ public class Changelog001Init {
 
 	@ChangeSet(order = "002", id = "Init_Pool_Document", author = "Barnabas Szabo")
 	public void poolInit(final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
-		mongoTemplate.save(Pool.builder().displayName("Sample 1").code("mycat1").description("Sample pool").weight(100l).build());
-		mongoTemplate.save(Pool.builder().displayName("Sample 2").code("mycat2").description("Sample pool").weight(150l).build());
-		mongoTemplate.save(Pool.builder().displayName("Sample 3").code("mycat3").description("Sample pool").weight(40l).build());
+		mongoTemplate.save(Pool.builder().id("sample1").displayName("Sample 1").code("mycat1").description("Sample pool").weight(100l).build());
+		mongoTemplate.save(Pool.builder().id("sample2").displayName("Sample 2").code("mycat2").description("Sample pool").weight(150l).build());
+		mongoTemplate.save(Pool.builder().id("sample3").displayName("Sample 3").code("mycat3").description("Sample pool").weight(40l).build());
+	}
 
+	@ChangeSet(order = "003", id = "Init_LinkGroup_Document", author = "Barnabas Szabo")
+	public void linkInit(final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
+		final Collection<Link> links1 = Arrays.asList(Link.builder().href("https://google.com").value("Google").build(),
+				Link.builder().href("https://github.com").value("GitHub").build());
+		mongoTemplate.save(LinkGroup.builder().poolId("sample1").displayName("Useful links").links(links1).build());
+		mongoTemplate.save(LinkGroup.builder().poolId("sample2").displayName("Useful links").links(links1).build());
+		mongoTemplate.save(LinkGroup.builder().poolId("sample3").displayName("Useful links").links(links1).build());
+
+		final Collection<Link> links2 = Arrays.asList(Link.builder().href("https://github.com/szabobar/swarm-manager").value("Swarm Manager on Github").build());
+		mongoTemplate.save(LinkGroup.builder().poolId("sample1").displayName("Dev links").links(links2).build());
+		mongoTemplate.save(LinkGroup.builder().poolId("sample2").displayName("Dev links").links(links2).build());
+		mongoTemplate.save(LinkGroup.builder().poolId("sample3").displayName("Dev links").links(links2).build());
 	}
 
 }

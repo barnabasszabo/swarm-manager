@@ -59,3 +59,13 @@
 .port {
   padding-right: 10px;
 }
+
+.task-list-container {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  li {
+    padding: 10px 14px;
+    border-bottom: 1px solid #dbdbdb;
+  }
+}
