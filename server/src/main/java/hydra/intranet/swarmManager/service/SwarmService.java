@@ -1,8 +1,10 @@
 package hydra.intranet.swarmManager.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.model.PortConfig;
 import com.github.dockerjava.api.model.Service;
 import com.github.dockerjava.api.model.SwarmNode;
 import com.github.dockerjava.api.model.Task;
@@ -86,13 +89,14 @@ public class SwarmService {
 		final Collection<Ecosystem> ecosystems = new ArrayList<>();
 		final Optional<Pool> maybePool = poolService.getPool(poolId);
 		if (maybePool.isPresent()) {
-			ecosystems.addAll(getEcosystems(maybePool.get()));
+			final Collection<Ecosystem> ecoList = new ArrayList<>(getEcosystems(maybePool.get()));
+			ecosystems.addAll(ecoList);
 		}
 		return ecosystems;
 	}
 
 	public Collection<Ecosystem> getEcosystems(final Pool pool) {
-		return getEcosystems().stream().filter(e -> e.getPools().equals(pool)).collect(Collectors.toList());
+		return getEcosystems().stream().filter(e -> e.getPools().contains(pool)).collect(Collectors.toList());
 	}
 
 	public Collection<Ecosystem> collectEcosystems() {
@@ -144,29 +148,40 @@ public class SwarmService {
 			final boolean isStack = maybeLabels.isPresent() && maybeLabels.get().containsKey(DOCKER_STACK_LABEL);
 			final String name = isStack ? maybeLabels.get().get(DOCKER_STACK_LABEL) : service.getSpec().getName();
 			final List<Task> tasks = client.listTasksCmd().withServiceFilter(service.getSpec().getName()).exec();
+
+			List<PortConfig> ports = Collections.emptyList();
+			try {
+				ports = Arrays.asList(service.getEndpoint().getPorts());
+			} catch (final Exception e) {
+			}
+
 			if (isStack) {
-				addTaskToEcosystem(ecosystems, name, tasks, maybeLabels);
+				addTaskToEcosystem(ecosystems, name, tasks, maybeLabels, ports, service);
 			} else {
 				final Ecosystem eco = Ecosystem.builder().isStack(isStack).name(name).build();
 				eco.addLabel(maybeLabels);
-				eco.addTasks(tasks);
+				eco.addTasks(tasks, service);
+				eco.addPorts(ports);
 				ecosystems.add(eco);
 			}
 		});
 		return ecosystems;
 	}
 
-	private void addTaskToEcosystem(final Collection<Ecosystem> ecosystems, final String stackName, final List<Task> tasks, final Optional<Map<String, String>> maybeLabels) {
+	private void addTaskToEcosystem(final Collection<Ecosystem> ecosystems, final String stackName, final List<Task> tasks, final Optional<Map<String, String>> maybeLabels,
+			final List<PortConfig> ports, final Service service) {
 		final List<Ecosystem> ecosystemArray = ecosystems.stream().filter(s -> s.getName().equals(stackName)).collect(Collectors.toList());
 		if (CollectionUtils.isEmpty(ecosystemArray)) { // Create new stack
 			final Ecosystem eco = Ecosystem.builder().isStack(true).name(stackName).build();
 			eco.addLabel(maybeLabels);
-			eco.addTasks(tasks);
+			eco.addTasks(tasks, service);
+			eco.addPorts(ports);
 			ecosystems.add(eco);
 		} else { // Add to existing stack
-			ecosystemArray.forEach(e -> {
-				e.addLabel(maybeLabels);
-				e.addTasks(tasks);
+			ecosystemArray.forEach(eco -> {
+				eco.addLabel(maybeLabels);
+				eco.addTasks(tasks, service);
+				eco.addPorts(ports);
 			});
 		}
 	}

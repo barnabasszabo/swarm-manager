@@ -1,0 +1,61 @@
+.overloaded {
+  background-color: #ffc107 !important;
+}
+
+.docker-task {
+  margin-left: 10px;
+}
+
+.clearfix {
+  overflow: auto;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.task-status {
+  border-radius: 9px;
+  padding: 2px 8px;
+  color: #ffffff;
+  background-color: #ffc107;
+}
+
+.task-status-running {
+  color: #ffffff;
+  background-color: #7CB342;
+}
+
+.task-status-shutdown {
+  color: #ffffff;
+  background-color: #e91e63;
+}
+
+.declared-resources {
+  margin-left: 15px;
+}
+
+.box-footer {
+  margin-top: 10px;
+}
+
+.col-expand {
+  width: 50px;
+}
+
+.col-status {
+  width: 100px;
+}
+
+.ports {
+  padding-top: 5px;
+  padding-bottom: 10px;
+}
+
+.port {
+  padding-right: 10px;
+}

@@ -6,7 +6,8 @@ import { MenuItem } from 'primeng/primeng';
 
 @Component({
     selector: 'app-breadcrumb',
-    templateUrl: './app.breadcrumb.component.html'
+    templateUrl: './app.breadcrumb.component.html',
+    styleUrls: ['./app.breadcrumb.component.scss']
 })
 export class AppBreadcrumbComponent implements OnDestroy {
 

@@ -7,16 +7,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.common.base.Optional;
+
 import hydra.intranet.swarmManager.domain.Ecosystem;
 import hydra.intranet.swarmManager.domain.Pool;
+import hydra.intranet.swarmManager.domain.PoolResource;
 import hydra.intranet.swarmManager.service.PoolService;
+import hydra.intranet.swarmManager.service.ResourceService;
 import hydra.intranet.swarmManager.service.SwarmService;
 
 @RestController
-public class PoolController {
+public class PoolController extends BaseController {
 
 	@Autowired
 	private PoolService poolService;
+
+	@Autowired
+	private ResourceService resourceService;
 
 	@Autowired
 	private SwarmService swarmService;
@@ -24,6 +31,17 @@ public class PoolController {
 	@GetMapping("/pool")
 	public Collection<Pool> getPoolList() {
 		return poolService.getActivePools();
+	}
+
+	@GetMapping("/pool/{id}")
+	public Pool getPool(@PathVariable("id") final String poolId) {
+		final Optional<Pool> maybePool = poolService.getPool(poolId);
+		return maybePool.or(Pool.builder().build());
+	}
+
+	@GetMapping("/pool/{id}/resource")
+	public PoolResource getPoolResource(@PathVariable("id") final String poolId) {
+		return resourceService.getPoolResource(poolId);
 	}
 
 	@GetMapping("/pool/{id}/ecosystem")

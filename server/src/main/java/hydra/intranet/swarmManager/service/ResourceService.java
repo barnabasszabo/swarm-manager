@@ -3,9 +3,11 @@ package hydra.intranet.swarmManager.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.github.dockerjava.api.model.SwarmNode;
 import com.github.dockerjava.api.model.SwarmNodeAvailability;
@@ -27,6 +29,16 @@ public class ResourceService {
 
 	@Autowired
 	private ConfigService configService;
+
+	public PoolResource getPoolResource(final String poolId) {
+		PoolResource result = PoolResource.builder().build();
+		final List<PoolResource> poolResources = getPoolResources(swarmService.getEcosystems()).stream().filter(pr -> pr.getPool().getId().equals(poolId))
+				.collect(Collectors.toList());
+		if (!CollectionUtils.isEmpty(poolResources)) {
+			result = poolResources.get(0);
+		}
+		return result;
+	}
 
 	// FIXME Ha nem kötelezőek a pool-ok!
 	public List<PoolResource> getPoolResources(final Collection<Ecosystem> ecosystems) {

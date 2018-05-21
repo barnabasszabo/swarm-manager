@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {LocationStrategy, HashLocationStrategy} from '@angular/common';
@@ -13,6 +14,7 @@ import {AutoCompleteModule} from 'primeng/primeng';
 import {BreadcrumbModule} from 'primeng/primeng';
 import {ButtonModule} from 'primeng/primeng';
 import {CalendarModule} from 'primeng/primeng';
+import {CardModule} from 'primeng/card';
 import {CarouselModule} from 'primeng/primeng';
 import {ChartModule} from 'primeng/primeng';
 import {CheckboxModule} from 'primeng/primeng';
@@ -81,28 +83,14 @@ import {AppMenuComponent, AppSubMenuComponent} from './layout/app.menu.component
 import {AppBreadcrumbComponent} from './layout/app.breadcrumb.component';
 import {AppTopBarComponent} from './layout/app.topbar.component';
 import {AppFooterComponent} from './layout/app.footer.component';
-import {DashboardComponent} from './demo/view/dashboard.component';
-import {SampleDemoComponent} from './demo/view/sampledemo.component';
-import {FormsDemoComponent} from './demo/view/formsdemo.component';
-import {DataDemoComponent} from './demo/view/datademo.component';
-import {PanelsDemoComponent} from './demo/view/panelsdemo.component';
-import {OverlaysDemoComponent} from './demo/view/overlaysdemo.component';
-import {MenusDemoComponent} from './demo/view/menusdemo.component';
-import {MessagesDemoComponent} from './demo/view/messagesdemo.component';
-import {MiscDemoComponent} from './demo/view/miscdemo.component';
-import {EmptyDemoComponent} from './demo/view/emptydemo.component';
-import {ChartsDemoComponent} from './demo/view/chartsdemo.component';
-import {FileDemoComponent} from './demo/view/filedemo.component';
-import {UtilsDemoComponent} from './demo/view/utilsdemo.component';
-import {DocumentationComponent} from './demo/view/documentation.component';
-
-import {CarService} from './demo/service/carservice';
-import {CountryService} from './demo/service/countryservice';
-import {EventService} from './demo/service/eventservice';
-import {NodeService} from './demo/service/nodeservice';
 
 import {BreadcrumbService} from './layout/breadcrumb.service';
 import { PoolEcosystemPageComponent } from './swarm/page/pool-ecosystem-page/pool-ecosystem-page.component';
+import { DockerLabelPipe } from './swarm/pipe/docker-label.pipe';
+import { KeepHtmlPipe } from './swarm/pipe/keep-html.pipe';
+import { EcosystemPortsPipe } from './swarm/pipe/ecosystem-ports.pipe';
+import { DockerImagePipe } from './swarm/pipe/docker-image.pipe';
+import { DashboardComponent } from './swarm/dashboard/dashboard.component';
 
 @NgModule({
     imports: [
@@ -110,12 +98,14 @@ import { PoolEcosystemPageComponent } from './swarm/page/pool-ecosystem-page/poo
         FormsModule,
         AppRoutes,
         HttpModule,
+        HttpClientModule,
         BrowserAnimationsModule,
         AccordionModule,
         AutoCompleteModule,
         BreadcrumbModule,
         ButtonModule,
         CalendarModule,
+        CardModule,
         CarouselModule,
         ChartModule,
         CheckboxModule,
@@ -186,26 +176,16 @@ import { PoolEcosystemPageComponent } from './swarm/page/pool-ecosystem-page/poo
         AppBreadcrumbComponent,
         AppTopBarComponent,
         AppFooterComponent,
-        DashboardComponent,
-        SampleDemoComponent,
-        FormsDemoComponent,
-        DataDemoComponent,
-        PanelsDemoComponent,
-        OverlaysDemoComponent,
-        MenusDemoComponent,
-        MessagesDemoComponent,
-        MessagesDemoComponent,
-        MiscDemoComponent,
-        ChartsDemoComponent,
-        EmptyDemoComponent,
-        FileDemoComponent,
-        UtilsDemoComponent,
-        DocumentationComponent,
-        PoolEcosystemPageComponent
+        PoolEcosystemPageComponent,
+        DockerLabelPipe,
+        KeepHtmlPipe,
+        EcosystemPortsPipe,
+        DockerImagePipe,
+        DashboardComponent
     ],
     providers: [
         {provide: LocationStrategy, useClass: HashLocationStrategy},
-        CarService, CountryService, EventService, NodeService, BreadcrumbService
+        BreadcrumbService
     ],
     bootstrap: [AppComponent]
 })

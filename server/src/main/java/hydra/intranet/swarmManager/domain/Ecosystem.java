@@ -2,12 +2,20 @@ package hydra.intranet.swarmManager.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.springframework.util.CollectionUtils;
+
+import com.github.dockerjava.api.model.PortConfig;
+import com.github.dockerjava.api.model.Service;
 import com.github.dockerjava.api.model.SwarmNode;
 import com.github.dockerjava.api.model.Task;
 import com.google.common.base.Optional;
@@ -50,15 +58,33 @@ public class Ecosystem implements Serializable {
 	@Builder.Default
 	private Map<String, Set<String>> labels = new HashMap<>();
 
+	@Builder.Default
+	private Collection<PortConfig> portConfig = new ArrayList<>();
+
 	public Ecosystem addRemoveMessage(String msg) {
 		markedAsRemove = true;
 		markedMessage.add(msg);
 		return this;
 	}
 
-	public Ecosystem addTasks(List<Task> tasks) {
+	public Ecosystem addTasks(List<Task> tasks, Service service) {
 		tasks.forEach(t -> {
-			this.tasks.add(SwarmTask.builder().task(t).build());
+			List<PortConfig> ports = Collections.emptyList();
+			try {
+				ports = Arrays.asList(service.getEndpoint().getPorts());
+			} catch (final Exception e) {
+			}
+			this.tasks.add(SwarmTask.builder().task(t).ports(ports).serviceName(service.getSpec().getName()).build());
+		});
+		return this;
+	}
+
+	public Ecosystem addPorts(Collection<PortConfig> ports) {
+		ports.forEach(p -> {
+			List<PortConfig> equalPorts = portConfig.stream().filter(port -> port.getPublishedPort() == p.getPublishedPort()).collect(Collectors.toList());
+			if (CollectionUtils.isEmpty(equalPorts)) {
+				portConfig.add(p);
+			}
 		});
 		return this;
 	}

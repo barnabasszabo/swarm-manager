@@ -1,14 +1,15 @@
 package hydra.intranet.swarmManager.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import com.github.dockerjava.api.model.PortConfig;
 import com.github.dockerjava.api.model.SwarmNode;
 import com.github.dockerjava.api.model.Task;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -19,5 +20,10 @@ public class SwarmTask implements Serializable {
 	private SwarmNode node;
 
 	private Task task;
+
+	private String serviceName;
+
+	@Builder.Default
+	private Collection<PortConfig> ports = new ArrayList<>();
 
 }

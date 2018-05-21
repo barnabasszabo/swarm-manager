@@ -23,8 +23,9 @@ public class MailService {
 	@EventListener
 	public void ecosystemRemoved(final EcosystemRemoved event) {
 		final Ecosystem ecosystem = event.getEcosystem();
-		final String title = "Ecosystem removed from " + configService.getString("DOCKER_HOST_DNS_NAME") + " ; ecosystem: " + ecosystem.getName();
-		final String body = ecosystem.getName() + " Ecosystem removed from " + configService.getString("DOCKER_HOST_DNS_NAME") + "! \n\n" + ecosystem.toString();
+		final String title = "Ecosystem removed from " + configService.getString("DOCKER_HOST_DNS_NAME") + " ; Ecosystem: " + ecosystem.getName();
+		final String body = ecosystem.getName() + " Ecosystem removed from " + configService.getString("DOCKER_HOST_DNS_NAME") + "!" + "\n\nReasons: "
+				+ ecosystem.getMarkedMessage() + " \n\n" + ecosystem.toString();
 
 		this.sendToSupport(title, body);
 

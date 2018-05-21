@@ -2,23 +2,25 @@ version: '3.4'
 services:
   first-service:
     image: mongo
+    ports:
+    - "27018:27017"
+    - "27019:27018"
+    - "27020:27019"
     deploy:
       # Egyszer szükséges megadni ecosystem-enként a label-eket
       labels:
-        loxon.info: "Test ecosystem 1" # Ecosystem értelmes leírása
+        loxon.info: "Test ecosystem 1. Maintenance: <a href='mailto:devops@loxon.eu'>DevOps</a>" # Ecosystem értelmes leírása
         loxon.pool: "mycat1" # Milyen csoportba fog tartozni, a felületen a csoportnál megadott pattern-re illeszkedjen
         loxon.cleanEmail: "PROJECT_EMAIL@loxon.eu" # Ha töröl a rendszer egy környezetet, akkor ide jelzi, hogy miért
         loxon.priority: 70 # 0 és 100 között. Ha a területen túllógnak az ecosystem-ek, akkor a legalacsonyabbakat törli
-        loxon.review: 8284
 
       # Resource definíció kötelező minden containerre. Limit és Reserved értékek között 10% lehet csak!
       resources:
         limits: # Ennyi lehet a maximum amit használhat. Figyelj az XMX értékre is!
-          cpus: '0.5' # Limit CPU core mennyiség. Ezredig is le lehet bontani 0.0005
+          cpus: '3' # Limit CPU core mennyiség. Ezredig is le lehet bontani 0.0005
           memory: 1G # Limit Memória.
         reservations: # Ennyi a garantált erőforrás, amit megkap (minimum)
-          cpus: '0.5' # Csak 10%-al lehet kevesebb mint a limit!
-          memory: 1G # Csak 10%-al lehet kevesebb mint a limit!  
+          memory: 1G # Azonos mint a limit!
 
   other-service:
     image: nginx
@@ -26,7 +28,7 @@ services:
       # Resource definíció kötelező minden containerre. 10% eltérés a limit és reserved között!
       resources:
         limits:
-          cpus: '0.05'
+          cpus: '2'
           memory: 2G
         reservations:
           cpus: '0.05'
