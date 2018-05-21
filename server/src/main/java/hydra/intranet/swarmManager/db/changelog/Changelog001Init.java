@@ -107,11 +107,13 @@ public class Changelog001Init {
 	public void linkInit(final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
 		final Collection<Link> links1 = Arrays.asList(Link.builder().href("https://google.com").value("Google").build(),
 				Link.builder().href("https://github.com").value("GitHub").build());
+		mongoTemplate.save(LinkGroup.builder().poolId("all").displayName("Useful links").links(links1).build());
 		mongoTemplate.save(LinkGroup.builder().poolId("sample1").displayName("Useful links").links(links1).build());
 		mongoTemplate.save(LinkGroup.builder().poolId("sample2").displayName("Useful links").links(links1).build());
 		mongoTemplate.save(LinkGroup.builder().poolId("sample3").displayName("Useful links").links(links1).build());
 
 		final Collection<Link> links2 = Arrays.asList(Link.builder().href("https://github.com/szabobar/swarm-manager").value("Swarm Manager on Github").build());
+		mongoTemplate.save(LinkGroup.builder().poolId("all").displayName("Dev links").links(links2).build());
 		mongoTemplate.save(LinkGroup.builder().poolId("sample1").displayName("Dev links").links(links2).build());
 		mongoTemplate.save(LinkGroup.builder().poolId("sample2").displayName("Dev links").links(links2).build());
 		mongoTemplate.save(LinkGroup.builder().poolId("sample3").displayName("Dev links").links(links2).build());

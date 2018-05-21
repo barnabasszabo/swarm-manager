@@ -17,7 +17,7 @@ export class Ecosystem {
 
   markedMessage?: string[];
 
-  isOverloaded: boolean;
+  overloaded: boolean;
 
   tasks: SwarmTask[];
 

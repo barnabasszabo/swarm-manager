@@ -19,7 +19,7 @@ export class AppComponent implements OnDestroy, OnInit {
 
     activeTopbarItem: Element;
 
-    layoutMode = 'static';
+    layoutMode = 'overlay'; // static, overlay
 
     sidebarActive: boolean;
 

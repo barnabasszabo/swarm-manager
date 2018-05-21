@@ -1,13 +1,14 @@
 import { Component, Input, OnInit, AfterViewInit, OnDestroy, ElementRef, Renderer, ViewChild } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { Location } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RoutesRecognized } from '@angular/router';
 import { MenuItem, ScrollPanel } from 'primeng/primeng';
 import { AppComponent } from '../app.component';
 import { SwarmService } from '../swarm/swarm.service';
 
 import * as _ from 'lodash';
 import { Pool } from '../swarm/model/Pool';
+import 'rxjs/add/operator/pairwise';
 
 @Component({
   selector: 'app-menu',
@@ -24,7 +25,17 @@ export class AppMenuComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('scrollPanel') layoutMenuScrollerViewChild: ScrollPanel;
 
-  constructor(public app: AppComponent, private swarmservice: SwarmService) { }
+  constructor(public app: AppComponent, private swarmservice: SwarmService, private router: Router) {
+    if ( localStorage.getItem('prevUrl') ) {
+      this.router.navigateByUrl(localStorage.getItem('prevUrl'));
+    }
+    this.router.events
+      .subscribe((event) => {
+        if (event instanceof RoutesRecognized) {
+          localStorage.setItem('prevUrl', event.urlAfterRedirects);
+        }
+      });
+  }
 
   ngAfterViewInit() {
     setTimeout(() => { this.layoutMenuScrollerViewChild.moveBar(); }, 100);
@@ -43,7 +54,7 @@ export class AppMenuComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   refresh() {
-    console.log('Refreshing pool list in menu');
+    console.log('Refreshing pool list in sidebar');
 
     this.swarmservice.getPools().subscribe(data => {
       if (!_.isEqual(this.poolCache, data)) {

@@ -17,10 +17,6 @@ export class SwarmService {
     return this.http.get<Pool[]>('/api/pool');
   }
 
-  getPool(id: string): Observable<Pool> {
-    return this.http.get<Pool>('/api/pool/' + id);
-  }
-
   getPoolResource(poolId: string): Observable<PoolResource> {
     return this.http.get<PoolResource>('/api/pool/' + poolId + '/resource');
   }

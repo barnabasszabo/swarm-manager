@@ -1,155 +1,175 @@
-<ng-container *ngIf="pool">
-
-  <p-card>
-    <div class="ui-g">
-      <div class="ui-g-8 ui-md-8 ui-lg-8">
-        <p-fieldset legend="Useful links for {{pool.displayName}}" [toggleable]="false">
-          <div class="ui-g">
-            <div class="ui-g-4 ui-lg-4 ui-md-4" *ngFor="let linkGroup of poolLinkGroup">
-              <p-panel [header]="linkGroup.displayName">
-                <ul class="task-list-container">
-                  <li *ngFor="let link of linkGroup.links">
-                    <a [href]="link.href" target="_blank" [innerHTML]="link.value | keepHtml"></a>
-                  </li>
-                </ul>
-              </p-panel>
-            </div>
+<p-card>
+  <div class="ui-g">
+    <div class="ui-g-8 ui-md-8 ui-lg-8">
+      <p-fieldset legend="Useful links" [toggleable]="false">
+        <div class="ui-g">
+          <div class="ui-g-3 ui-lg-3 ui-md-3" *ngFor="let linkGroup of poolLinkGroup">
+            <p-panel [header]="linkGroup.displayName">
+              <ul class="task-list-container">
+                <li *ngFor="let link of linkGroup.links">
+                  <a [href]="link.href" target="_blank" [innerHTML]="link.value | keepHtml"></a>
+                </li>
+              </ul>
+            </p-panel>
           </div>
-          <div class="clearfix">
-            <div class="right">
-              <p-button (onClick)="editLinks()" icon="fa fa-fw fa-pencil"></p-button>
-              <p-dialog header="Edit Links" [(visible)]="poolLinkGroupDisplay" [modal]="true" [responsive]="true" [width]="650" [minWidth]="500"
-                [minY]="300">
-                <span>
-                  <textarea [rows]="30" [cols]="75" pInputTextarea autoResize="autoResize" [(ngModel)]="poolLinkGroupJSON"></textarea>
-                </span>
-                <p-footer>
-                  <button type="button" pButton icon="fa-check" (click)="saveNewLinks()" [disabled]="isLinksInvalid()" label="Save"></button>
-                  <button type="button" pButton icon="fa-close" (click)="poolLinkGroupDisplay=false" label="Cancel"></button>
-                </p-footer>
-              </p-dialog>
-            </div>
+        </div>
+        <div class="clearfix">
+          <div class="right">
+            <p-button (onClick)="editLinks()" icon="fa fa-fw fa-pencil"></p-button>
+            <p-dialog header="Edit Links" [(visible)]="poolLinkGroupDisplay" [modal]="true" [responsive]="true" [width]="650" [minWidth]="500"
+              [minY]="300">
+              <span>
+                <textarea [rows]="30" [cols]="75" pInputTextarea autoResize="autoResize" [(ngModel)]="poolLinkGroupJSON"></textarea>
+              </span>
+              <p-footer>
+                <button type="button" pButton icon="fa-check" (click)="saveNewLinks()" [disabled]="isLinksInvalid()" label="Save"></button>
+                <button type="button" pButton icon="fa-close" (click)="poolLinkGroupDisplay=false" label="Cancel"></button>
+              </p-footer>
+            </p-dialog>
           </div>
-        </p-fieldset>
-      </div>
-
-      <div class="ui-g-4 ui-md-4 ui-lg-4">
-        <p-fieldset legend="Declared resources for {{pool.displayName}}" [toggleable]="false">
-          <div class="ui-g">
-            <div class="ui-g-6 ui-lg-6 ui-md-6">
-              <p-chart type="bar" [data]="poolOverviewCpuChart" [options]="chartOptions"></p-chart>
-            </div>
-            <div class="ui-g-6 ui-lg-6 ui-md-6">
-              <p-chart type="bar" [data]="poolOverviewMemoryChart" [options]="chartOptions"></p-chart>
-            </div>
-          </div>
-        </p-fieldset>
-      </div>
+        </div>
+      </p-fieldset>
     </div>
-  </p-card>
 
-  <p-card>
-    <p-tabView>
+    <div class="ui-g-4 ui-md-4 ui-lg-4">
+      <p-fieldset legend="Declared resources" [toggleable]="false">
+        <div class="ui-g">
+          <div class="ui-g-6 ui-lg-6 ui-md-6">
+            <p-chart type="bar" [data]="poolOverviewCpuChart" [options]="chartOptions"></p-chart>
+          </div>
+          <div class="ui-g-6 ui-lg-6 ui-md-6">
+            <p-chart type="bar" [data]="poolOverviewMemoryChart" [options]="chartOptions"></p-chart>
+          </div>
+        </div>
+      </p-fieldset>
+    </div>
+  </div>
+</p-card>
 
-      <p-tabPanel header="Ecosystems">
-        <p-table [value]="ecosystems" [paginator]="true" [rows]="20" [resizableColumns]="true" dataKey="name">
+<p-card>
+  <p-tabView>
+
+    <p-tabPanel header="Ecosystems">
+      <p-table [value]="ecosystems" [paginator]="true" [rows]="20" [resizableColumns]="true" dataKey="name">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="col-expand"></th>
+            <th class="col-status" pResizableColumn>Status</th>
+            <th [pSortableColumn]="'name'" pResizableColumn>
+              Name
+              <p-sortIcon [field]="'name'"></p-sortIcon>
+            </th>
+            <th pResizableColumn>Info</th>
+            <th class="col-resource" pResizableColumn>Resources</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-eco let-expanded="expanded">
+          <tr [ngClass]="{'overloaded' : eco.overloaded}">
+            <!-- Expand -->
+            <td>
+              <a [pRowToggler]="eco">
+                <i [ngClass]="expanded ? 'fa fa-fw fa-chevron-circle-down' : 'fa fa-fw fa-chevron-circle-right'"></i>
+              </a>
+            </td>
+
+            <!-- Status -->
+            <td [pTooltip]="'<strong>Running services: </strong>' + eco.status.runningServices + '<br/><strong>Total services: </strong>' + eco.status.totalServices"
+              [escape]="false" [tooltipPosition]="'top'">{{eco.status.runningServices}} / {{eco.status.totalServices}}
+            </td>
+
+            <!-- Name -->
+            <td>
+              <i *ngIf="eco.overloaded" class="fa fa-info" [pTooltip]="'Ecosystem is not in the dedicated area! Can be deleted at any time!'"
+                [escape]="false"></i>
+              {{eco.name}}
+
+            </td>
+
+            <!-- Info -->
+            <td>
+              <div *ngFor="let label of eco | dockerLabel : 'loxon.info'" [innerHTML]="label | keepHtml"></div>
+            </td>
+
+            <!-- Resources -->
+            <td>
+              <div class="left declared-resources" [pTooltip]="'<h4>CPU</h4>Dedicated: ' + (eco.usedResource.reservedCpuInCore).toFixed(2) + ' core <br/>Limit: ' + (eco.usedResource.limitCpuInCore).toFixed(2) + ' core<hr/><h4>Memory</h4>Dedicated: ' + (eco.usedResource.reservedMemoryInGB).toFixed(2) + ' GB <br/>Limit: ' + (eco.usedResource.limitMemoryInGB).toFixed(2) + ' GB'"
+                [escape]="false">
+                <div>CPU: {{ (eco.usedResource.reservedCpuInCore).toFixed(2) }} core -> {{ (eco.usedResource.limitCpuInCore).toFixed(2)
+                  }} core</div>
+                <div>Mem: {{ (eco.usedResource.reservedMemoryInGB).toFixed(2) }} GB -> {{ (eco.usedResource.limitMemoryInGB).toFixed(2)
+                  }} GB</div>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="rowexpansion" let-eco>
+          <tr>
+            <td [attr.colspan]="4">
+
+              <div class="ui-g">
+                <div class="ui-g-4 ui-lg-4 ui-md-4" *ngFor="let task of eco.tasks">
+                  <p-card title="{{task.serviceName}}" subtitle="{{task.task.Spec.ContainerSpec.Image | dockerImage}}" class="docker-task">
+                    <div class="ports" *ngIf="task.ports">
+                      <span class="port" *ngFor="let port of task.ports">{{port.Protocol}}/
+                        <a [href]="'http://' + host + ':' + port.PublishedPort" target="_blank">{{port.PublishedPort}}</a>
+                      </span>
+                    </div>
+                    <div class="clearfix">
+                      <span *ngIf="task.node" class="left" [pTooltip]="'Host Name: <strong>' + task.node.Description.Hostname + '</strong><br/>Host CPU: ' + (task.node.Description.Resources.NanoCPUs / 1000000000).toFixed(2) + ' core<br/> Host Memory: ' + (task.node.Description.Resources.MemoryBytes / 1073741824).toFixed(2) + ' GB'"
+                        [escape]="false">
+                        <i class="material-icons">laptop_mac</i> {{task.node.Description.Hostname}}
+                      </span>
+                      <div class="left declared-resources" [pTooltip]="'<h4>CPU</h4>Dedicated: ' + (task.task.Spec.Resources.Reservations.NanoCPUs / 1000000000).toFixed(2) + ' core <br/>Limit: ' + (task.task.Spec.Resources.Limits.NanoCPUs / 1000000000).toFixed(2) + ' core<hr/><h4>Memory</h4>Dedicated: ' + (task.task.Spec.Resources.Reservations.MemoryBytes / 1073741824).toFixed(2) + ' GB <br/>Limit: ' + (task.task.Spec.Resources.Limits.MemoryBytes / 1073741824).toFixed(2) + ' GB'"
+                        [escape]="false">
+                        <div>CPU: {{ (task.task.Spec.Resources.Reservations.NanoCPUs / 1000000000).toFixed(2) }} core -> {{ (task.task.Spec.Resources.Limits.NanoCPUs
+                          / 1000000000).toFixed(2) }} core</div>
+                        <div>Mem: {{ (task.task.Spec.Resources.Reservations.MemoryBytes / 1073741824).toFixed(2) }} GB -> {{ (task.task.Spec.Resources.Limits.MemoryBytes
+                          / 1073741824).toFixed(2) }} GB</div>
+                      </div>
+                    </div>
+                    <div class="clearfix box-footer">
+                      <small class="left">UpdatedAt: {{task.task.UpdatedAt| date: 'EEEE, MMM d, y, h:mm:ss a'}}</small>
+                      <small class="right task-status" [ngClass]="{'task-status-running': task.task.Status.State === 'RUNNING', 'task-status-shutdown': task.task.Status.State === 'SHUTDOWN'}">{{task.task.Status.State}}</small>
+                    </div>
+                  </p-card>
+                </div>
+              </div>
+
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          There are {{ecosystems?.length}} ecosystems
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+
+    <p-tabPanel header="Ports">
+      <ng-template pTemplate="content">
+        <p-table [value]="ecosystems | ecosystemPorts" [paginator]="true" [rows]="20" [resizableColumns]="true" dataKey="name">
           <ng-template pTemplate="header">
             <tr>
-              <th class="col-expand"></th>
-              <th class="col-status">Status</th>
+              <th [pSortableColumn]="'port.PublishedPort'" pResizableColumn>Public Port
+                <p-sortIcon [field]="'port.PublishedPort'"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'port.TargetPort'" pResizableColumn>Internal Port
+                <p-sortIcon [field]="'port.TargetPort'"></p-sortIcon>
+              </th>
               <th [pSortableColumn]="'name'" pResizableColumn>
-                Name
+                Ecosystem Name
                 <p-sortIcon [field]="'name'"></p-sortIcon>
               </th>
-              <th>Info</th>
             </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-eco let-expanded="expanded">
-            <tr [ngClass]="{'overloaded' : eco.isOverloaded}">
-              <td>
-                <a [pRowToggler]="eco">
-                  <i [ngClass]="expanded ? 'fa fa-fw fa-chevron-circle-down' : 'fa fa-fw fa-chevron-circle-right'"></i>
-                </a>
-              </td>
-              <td [pTooltip]="'<strong>Running services: </strong>' + eco.status.runningServices + '<br/><strong>Total services: </strong>' + eco.status.totalServices"
-                [escape]="false" [tooltipPosition]="'top'">{{eco.status.runningServices}} / {{eco.status.totalServices}}</td>
-              <td>{{eco.name}}</td>
-              <td>
-                <div *ngFor="let label of eco | dockerLabel : 'loxon.info'" [innerHTML]="label | keepHtml"></div>
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="rowexpansion" let-eco>
+          <ng-template pTemplate="body" let-port>
             <tr>
-              <td [attr.colspan]="4">
-
-                <div class="ui-g">
-                  <div class="ui-g-4 ui-lg-4 ui-md-4" *ngFor="let task of eco.tasks">
-                    <p-card title="{{task.serviceName}}" subtitle="{{task.task.Spec.ContainerSpec.Image | dockerImage}}" class="docker-task">
-                      <div class="ports" *ngIf="task.ports">
-                        <span class="port" *ngFor="let port of task.ports">{{port.Protocol}}/
-                          <a [href]="'http://' + host + ':' + port.PublishedPort" target="_blank">{{port.PublishedPort}}</a>
-                        </span>
-                      </div>
-                      <div class="clearfix">
-                        <span *ngIf="task.node" class="left" [pTooltip]="'Host Name: <strong>' + task.node.Description.Hostname + '</strong><br/>Host CPU: ' + (task.node.Description.Resources.NanoCPUs / 1000000000).toFixed(2) + ' core<br/> Host Memory: ' + (task.node.Description.Resources.MemoryBytes / 1073741824).toFixed(2) + ' GB'"
-                          [escape]="false">
-                          <i class="material-icons">laptop_mac</i> {{task.node.Description.Hostname}}
-                        </span>
-                        <div class="left declared-resources" [pTooltip]="'<h4>CPU</h4>Dedicated: ' + (task.task.Spec.Resources.Reservations.NanoCPUs / 1000000000).toFixed(2) + ' core <br/>Limit: ' + (task.task.Spec.Resources.Limits.NanoCPUs / 1000000000).toFixed(2) + ' core<hr/><h4>Memory</h4>Dedicated: ' + (task.task.Spec.Resources.Reservations.MemoryBytes / 1073741824).toFixed(2) + ' GB <br/>Limit: ' + (task.task.Spec.Resources.Limits.MemoryBytes / 1073741824).toFixed(2) + ' GB'"
-                          [escape]="false">
-                          <div>CPU: {{ (task.task.Spec.Resources.Reservations.NanoCPUs / 1000000000).toFixed(2) }} core -> {{
-                            (task.task.Spec.Resources.Limits.NanoCPUs / 1000000000).toFixed(2) }} core</div>
-                          <div>Mem: {{ (task.task.Spec.Resources.Reservations.MemoryBytes / 1073741824).toFixed(2) }} GB -> {{
-                            (task.task.Spec.Resources.Limits.MemoryBytes / 1073741824).toFixed(2) }} GB</div>
-                        </div>
-                      </div>
-                      <div class="clearfix box-footer">
-                        <small class="left">UpdatedAt: {{task.task.UpdatedAt| date: 'EEEE, MMM d, y, h:mm:ss a'}}</small>
-                        <small class="right task-status" [ngClass]="{'task-status-running': task.task.Status.State === 'RUNNING', 'task-status-shutdown': task.task.Status.State === 'SHUTDOWN'}">{{task.task.Status.State}}</small>
-                      </div>
-                    </p-card>
-                  </div>
-                </div>
-
-              </td>
+              <td>{{port.port.Protocol}}/{{port.port.PublishedPort}}</td>
+              <td>{{port.port.Protocol}}/{{port.port.TargetPort}}</td>
+              <td>{{port.name}}</td>
             </tr>
-          </ng-template>
-          <ng-template pTemplate="summary">
-            There are {{ecosystems?.length}} ecosystems
           </ng-template>
         </p-table>
-      </p-tabPanel>
-
-      <p-tabPanel header="Ports">
-        <ng-template pTemplate="content">
-          <p-table [value]="ecosystems | ecosystemPorts" [paginator]="true" [rows]="20" [resizableColumns]="true" dataKey="name">
-            <ng-template pTemplate="header">
-              <tr>
-                <th [pSortableColumn]="'port.PublishedPort'" pResizableColumn>Public Port
-                  <p-sortIcon [field]="'port.PublishedPort'"></p-sortIcon>
-                </th>
-                <th [pSortableColumn]="'port.TargetPort'" pResizableColumn>Internal Port
-                  <p-sortIcon [field]="'port.TargetPort'"></p-sortIcon>
-                </th>
-                <th [pSortableColumn]="'name'" pResizableColumn>
-                  Ecosystem Name
-                  <p-sortIcon [field]="'name'"></p-sortIcon>
-                </th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-port>
-              <tr>
-                <td>{{port.port.Protocol}}/{{port.port.PublishedPort}}</td>
-                <td>{{port.port.Protocol}}/{{port.port.TargetPort}}</td>
-                <td>{{port.name}}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </ng-template>
-      </p-tabPanel>
-    </p-tabView>
-  </p-card>
-
-
-</ng-container>
+      </ng-template>
+    </p-tabPanel>
+  </p-tabView>
+</p-card>

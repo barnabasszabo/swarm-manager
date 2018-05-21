@@ -91,6 +91,7 @@ import { KeepHtmlPipe } from './swarm/pipe/keep-html.pipe';
 import { EcosystemPortsPipe } from './swarm/pipe/ecosystem-ports.pipe';
 import { DockerImagePipe } from './swarm/pipe/docker-image.pipe';
 import { DashboardComponent } from './swarm/dashboard/dashboard.component';
+import { TopMenuComponent } from './swarm/top-menu/top-menu.component';
 
 @NgModule({
     imports: [
@@ -181,7 +182,8 @@ import { DashboardComponent } from './swarm/dashboard/dashboard.component';
         KeepHtmlPipe,
         EcosystemPortsPipe,
         DockerImagePipe,
-        DashboardComponent
+        DashboardComponent,
+        TopMenuComponent
     ],
     providers: [
         {provide: LocationStrategy, useClass: HashLocationStrategy},
