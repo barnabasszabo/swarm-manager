@@ -92,6 +92,7 @@ import { EcosystemPortsPipe } from './swarm/pipe/ecosystem-ports.pipe';
 import { DockerImagePipe } from './swarm/pipe/docker-image.pipe';
 import { DashboardComponent } from './swarm/dashboard/dashboard.component';
 import { TopMenuComponent } from './swarm/top-menu/top-menu.component';
+import { RemoveMsgAsStringPipe } from './swarm/pipe/remove-msg-as-string.pipe';
 
 @NgModule({
     imports: [
@@ -183,7 +184,8 @@ import { TopMenuComponent } from './swarm/top-menu/top-menu.component';
         EcosystemPortsPipe,
         DockerImagePipe,
         DashboardComponent,
-        TopMenuComponent
+        TopMenuComponent,
+        RemoveMsgAsStringPipe
     ],
     providers: [
         {provide: LocationStrategy, useClass: HashLocationStrategy},

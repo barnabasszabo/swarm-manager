@@ -1,0 +1,21 @@
+FROM openjdk:8-jre-alpine
+
+# Install Docker dependencies
+RUN echo "" >> /etc/apk/repositories && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+RUN apk update \
+    && apk --no-cache add openssh openrc docker curl \
+    && rc-update add docker boot \
+    && rm -rf /var/cache/apk/*
+
+USER root
+VOLUME /tmp
+
+ARG JAR_FILE
+COPY ${JAR_FILE} app.jar
+
+ENV MONGO_URI=mongodb://mongo:27017/docker-swarm-manager
+ENV JAVA_OPTS="-Xms16m -Xmx150m"
+
+EXPOSE 8080
+
+CMD java -Djava.security.egd=file:/dev/./urandom -Duser.timezone=GMT ${JAVA_OPTS} -jar /app.jar

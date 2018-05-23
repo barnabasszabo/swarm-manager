@@ -1,0 +1,48 @@
+version: '3.4'
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "29019:27017"
+    volumes:
+      - "/opt/nfs/system/swarm-manager/db/mongo:/data/db"
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: "100m"
+        reservations:
+          memory: "100m"
+  proxy:
+    image: szabobar/swarm-manager-proxy:0.1-beta-alpine
+    depends_on:
+      - server
+    ports:
+      - "80:80"
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: "50m"
+        reservations:
+          memory: "50m"
+  server:
+    image: szabobar/swarm-manager-server:0.1-beta-alpine
+    depends_on:
+      - mongo
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      labels:
+        loxon.info: "Swarm Manager ecosystem"
+        loxon.pool: "system"
+        loxon.priority: "99"
+      resources:
+        limits:
+          cpus: "4"
+          memory: "155m"
+        reservations:
+          memory: "155m"
+    

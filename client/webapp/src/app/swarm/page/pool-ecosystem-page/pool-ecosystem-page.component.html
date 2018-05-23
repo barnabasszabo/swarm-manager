@@ -64,7 +64,7 @@
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-eco let-expanded="expanded">
-          <tr [ngClass]="{'overloaded' : eco.overloaded}">
+          <tr [ngClass]="{'overloaded' : eco.overloaded, 'marked-removed': eco.markedAsRemove}">
             <!-- Expand -->
             <td>
               <a [pRowToggler]="eco">
@@ -79,7 +79,9 @@
 
             <!-- Name -->
             <td>
-              <i *ngIf="eco.overloaded" class="fa fa-info" [pTooltip]="'Ecosystem is not in the dedicated area! Can be deleted at any time!'"
+              <i *ngIf="eco.overloaded" class="fa fa-info fa-2x" [pTooltip]="'Ecosystem is not in the dedicated area! Can be deleted at any time!'"
+                [escape]="false"></i>
+              <i *ngIf="eco.markedAsRemove" class="fa fa-trash fa-2x" [pTooltip]="'Marked this ecosystem as a deletion.<br/>Reason: ' + (eco.markedMessage | removeMsgAsString)"
                 [escape]="false"></i>
               {{eco.name}}
 
@@ -93,7 +95,7 @@
             <!-- Resources -->
             <td>
               <div class="left declared-resources" [pTooltip]="'<h4>CPU</h4>Dedicated: ' + (eco.usedResource.reservedCpuInCore).toFixed(2) + ' core <br/>Limit: ' + (eco.usedResource.limitCpuInCore).toFixed(2) + ' core<hr/><h4>Memory</h4>Dedicated: ' + (eco.usedResource.reservedMemoryInGB).toFixed(2) + ' GB <br/>Limit: ' + (eco.usedResource.limitMemoryInGB).toFixed(2) + ' GB'"
-                [escape]="false">
+                [escape]="false" [tooltipPosition]="'left'">
                 <div>CPU: {{ (eco.usedResource.reservedCpuInCore).toFixed(2) }} core -> {{ (eco.usedResource.limitCpuInCore).toFixed(2)
                   }} core</div>
                 <div>Mem: {{ (eco.usedResource.reservedMemoryInGB).toFixed(2) }} GB -> {{ (eco.usedResource.limitMemoryInGB).toFixed(2)
@@ -104,7 +106,7 @@
         </ng-template>
         <ng-template pTemplate="rowexpansion" let-eco>
           <tr>
-            <td [attr.colspan]="4">
+            <td [attr.colspan]="5">
 
               <div class="ui-g">
                 <div class="ui-g-4 ui-lg-4 ui-md-4" *ngFor="let task of eco.tasks">

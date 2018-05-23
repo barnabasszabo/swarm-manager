@@ -55,7 +55,7 @@ public class MemoryResourceValidator extends AbstractValidator {
 				final double memoryGapInPercent = (((limitMemory - reservedMemory) * 1.0) / reservedMemory) * 100;
 				final Long gapPercent = configService.getLong("MEMORY_LIMIT_RESERVED_GAP_IN_PERCENT");
 				if ((gapPercent > 0) && (memoryGapInPercent > gapPercent)) {
-					eco.addRemoveMessage("Reserved, and Limit resource GAP is higher than " + gapPercent + "%");
+					eco.addRemoveMessage("Reserved, and Limit Memory resource GAP is higher than " + gapPercent + "%");
 				}
 				if (limitMemory < reservedMemory) {
 					markIf(eco, "Reserved memory is higher than Limit memory definition", "REMOVE_IF_RESERVED_MEMORY_LOWER_THAN_LIMIT");

@@ -1,5 +1,9 @@
 .overloaded {
-  background-color: #ffc107 !important;
+  background-color: #ffd866 !important;
+}
+
+.marked-removed {
+  background-color: #ff7777 !important;
 }
 
 .docker-task {
@@ -52,7 +56,7 @@
 }
 
 .col-resource {
-  width: 250px;  
+  width: 250px;
 }
 
 .ports {

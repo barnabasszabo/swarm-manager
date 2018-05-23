@@ -103,13 +103,13 @@ export class PoolEcosystemPageComponent {
             label: 'Declared CPU cores',
             backgroundColor: data.used.reservedCpuInCore < data.dedicated.reservedCpuInCore ? goodColor : badColor,
             borderColor: data.used.reservedCpuInCore < data.dedicated.reservedCpuInCore ? goodColor : badColor,
-            data: [data.used.reservedCpuInCore]
+            data: [data.used.reservedCpuInCore.toFixed(2)]
           },
           {
             label: 'Total CPU core for pool',
             backgroundColor: '#42A5F5',
             borderColor: '#1E88E5',
-            data: [data.dedicated.reservedCpuInCore]
+            data: [data.dedicated.reservedCpuInCore.toFixed(2)]
           }
         ]
       };
@@ -120,13 +120,13 @@ export class PoolEcosystemPageComponent {
             label: 'Declared Memory (GB)',
             backgroundColor: data.used.reservedMemoryInGB < data.dedicated.reservedMemoryInGB ? goodColor : badColor,
             borderColor: data.used.reservedMemoryInGB < data.dedicated.reservedMemoryInGB ? goodColor : badColor,
-            data: [data.used.reservedMemoryInGB]
+            data: [data.used.reservedMemoryInGB.toFixed(2)]
           },
           {
             label: 'Total Memory (GB) for pool',
             backgroundColor: '#42A5F5',
             borderColor: '#1E88E5',
-            data: [data.dedicated.reservedMemoryInGB]
+            data: [data.dedicated.reservedMemoryInGB.toFixed(2)]
           }
         ]
       };
