@@ -21,8 +21,11 @@ public class DnsProxyDetector extends AbstractDetector implements IDetector {
 
 	private long elapsedLoopWithoutReload = 0l;
 
+	boolean isGenerated = false;
+
 	@Override
 	public void detect(final Collection<Ecosystem> ecosystems) {
+		isGenerated = false;
 		if (configService.isTrue("ENABLE_DNS_PROXY_FEATURE")) {
 			ecosystems.forEach(eco -> {
 				if (eco.getLabels().containsKey(configService.getString("DNS_PROXY_LABEL"))) {
@@ -43,20 +46,24 @@ public class DnsProxyDetector extends AbstractDetector implements IDetector {
 							// Active DNS entry
 							Runtime.getRuntime().exec(configService.getString("DNSPROXY_DNS_REGISTER_CMD").replaceAll("DNS_NAME", dnsName));
 
+							isGenerated = true;
 						} catch (final Exception e) {
 							log.error("Error in DNS Proxy feature generation!", e);
 						}
 					});
 				}
 			});
-			elapsedLoopWithoutReload++;
 
-			if (elapsedLoopWithoutReload > configService.getLong("RELOAD_PROXY_INTERVAL_IN_LOOP")) {
-				elapsedLoopWithoutReload = 0l;
-				try {
-					Runtime.getRuntime().exec(configService.getString("DNSPROXY_SERVER_RELOAD"));
-				} catch (final Exception e) {
-					log.error("Error in proxy reload!", e);
+			if (isGenerated) {
+				elapsedLoopWithoutReload++;
+
+				if (elapsedLoopWithoutReload > configService.getLong("RELOAD_PROXY_INTERVAL_IN_LOOP")) {
+					elapsedLoopWithoutReload = 0l;
+					try {
+						Runtime.getRuntime().exec(configService.getString("DNSPROXY_SERVER_RELOAD"));
+					} catch (final Exception e) {
+						log.error("Error in proxy reload!", e);
+					}
 				}
 			}
 		}

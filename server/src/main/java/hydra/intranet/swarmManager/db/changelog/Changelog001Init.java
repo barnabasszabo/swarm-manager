@@ -168,6 +168,9 @@ public class Changelog001Init {
 	@ChangeSet(order = "006", id = "Init_DefaultDnsProxy_Config", author = "Barnabas Szabo")
 	public void dnsDefaultProxyInit(final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
 
+		mongoTemplate.save(Config.builder().key("DNSPROXY_DEFAULT_CONFIG_ACTIVATE").value("scp /tmp/default.conf root@proxy:/etc/nginx/conf.d/default.conf")
+				.description("Command for activate the default dns proxy setup").type(ConfigType.STRING).build());
+
 		mongoTemplate.save(Config.builder().key("DNSPROXY_DEFAULT_CONFIG_TEMPLATE").value( //
 				"server {\n" + //
 						"\n" + //

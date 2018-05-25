@@ -33,6 +33,7 @@ import com.google.common.base.Optional;
 import hydra.intranet.swarmManager.domain.Ecosystem;
 import hydra.intranet.swarmManager.domain.Pool;
 import hydra.intranet.swarmManager.event.EcosystemRemoved;
+import hydra.intranet.swarmManager.event.LoopStarted;
 import hydra.intranet.swarmManager.service.detector.IDetector;
 import hydra.intranet.swarmManager.service.task.SwarmCollectTask;
 import hydra.intranet.swarmManager.service.validator.IEcosystemValidator;
@@ -100,6 +101,8 @@ public class SwarmService {
 	}
 
 	public Collection<Ecosystem> collectEcosystems() {
+		applicationEventPublisher.publishEvent(new LoopStarted(this));
+
 		final long start = System.currentTimeMillis();
 		final Collection<Ecosystem> ecosystems = collectRawEcosystems();
 
