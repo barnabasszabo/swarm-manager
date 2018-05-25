@@ -1,19 +1,14 @@
 package hydra.intranet.swarmManager.service;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -28,6 +23,9 @@ public class SwarmMgmService {
 
 	@Autowired
 	private ConfigService configService;
+
+	@Autowired
+	private ExecService execService;
 
 	private Pattern pattern = Pattern.compile("(.+)\\/(.+):(.*)");
 
@@ -71,26 +69,9 @@ public class SwarmMgmService {
 		delete("docker service rm " + name);
 	}
 
-	@EventListener(ApplicationReadyEvent.class)
-	public void generateDefaultSettings() {
-		try {
-			final String defaultVirtualhostConfig = configService.getString("DNSPROXY_DEFAULT_CONFIG_TEMPLATE").replaceAll("SWARM_DNS_NAME",
-					configService.getString("DOCKER_HOST_DNS_NAME"));
-			FileUtils.write(new File("/tmp/default.conf"), defaultVirtualhostConfig, Charset.forName("UTF-8"));
-
-			Runtime.getRuntime().exec(configService.getString("DNSPROXY_DEFAULT_CONFIG_ACTIVATE"));
-
-			Runtime.getRuntime().exec(configService.getString("DNSPROXY_SERVER_RELOAD"));
-
-			log.info("Generated default virtualhost setup on proxy!");
-		} catch (final Exception e) {
-			log.error("Error in default virtualhost activation!", e);
-		}
-	}
-
 	private void delete(final String cmd) {
 		try {
-			Runtime.getRuntime().exec(cmd);
+			execService.exec(cmd);
 		} catch (final Exception e) {
 			log.error("Error in remove command", e);
 		}

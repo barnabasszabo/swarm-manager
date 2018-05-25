@@ -12,6 +12,9 @@ RUN chmod -R 700 /root/.ssh
 
 COPY cmd.sh /opt/cmd.sh
 
+# Add config
+COPY nginx/default.conf /etc/nginx/conf.d/
+
 # add deployment
 COPY dist/webapp /usr/share/nginx/html
 

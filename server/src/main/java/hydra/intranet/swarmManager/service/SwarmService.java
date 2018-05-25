@@ -33,7 +33,6 @@ import com.google.common.base.Optional;
 import hydra.intranet.swarmManager.domain.Ecosystem;
 import hydra.intranet.swarmManager.domain.Pool;
 import hydra.intranet.swarmManager.event.EcosystemRemoved;
-import hydra.intranet.swarmManager.event.LoopStarted;
 import hydra.intranet.swarmManager.service.detector.IDetector;
 import hydra.intranet.swarmManager.service.task.SwarmCollectTask;
 import hydra.intranet.swarmManager.service.validator.IEcosystemValidator;
@@ -60,6 +59,9 @@ public class SwarmService {
 
 	@Autowired
 	private PoolService poolService;
+
+	@Autowired
+	private ExecService execService;
 
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;
@@ -101,8 +103,6 @@ public class SwarmService {
 	}
 
 	public Collection<Ecosystem> collectEcosystems() {
-		applicationEventPublisher.publishEvent(new LoopStarted(this));
-
 		final long start = System.currentTimeMillis();
 		final Collection<Ecosystem> ecosystems = collectRawEcosystems();
 
@@ -135,7 +135,7 @@ public class SwarmService {
 			final String rmCommand = ecosystem.isStack() ? "docker stack rm " + ecosystem.getName() : "docker service rm " + ecosystem.getName();
 			try {
 				log.info("Remove ecosystem: {}", ecosystem.getName());
-				Runtime.getRuntime().exec(rmCommand);
+				execService.exec(rmCommand);
 				applicationEventPublisher.publishEvent(new EcosystemRemoved(this, ecosystem));
 			} catch (final Exception e) {
 				log.error("Error in remove command", e);

@@ -140,8 +140,7 @@ public class Changelog001Init {
 
 		mongoTemplate.save(Config.builder().key("DNSPROXY_DNS_REMOVE_CMD").value("echo 'FIXME'").description("DNS unregistration command").type(ConfigType.STRING).build());
 
-		mongoTemplate.save(Config.builder().key("DNSPROXY_SERVER_RELOAD").value("ssh root@proxy \"nginx -s reload\"").description("Proxy server reload command")
-				.type(ConfigType.STRING).build());
+		mongoTemplate.save(Config.builder().key("DNSPROXY_SERVER_RELOAD").value("/opt/reload_proxy.sh").description("Proxy server reload command").type(ConfigType.STRING).build());
 
 		mongoTemplate.save(Config.builder().key("DNSPROXY_MULTI_SERVER_CONFIG_ACTIVATE").value("scp /tmp/gen.DNS_NAME.conf root@proxy:/etc/nginx/conf.d/gen.DNS_NAME.conf")
 				.description("Command for activate the dns proxy setup").type(ConfigType.STRING).build());
@@ -163,76 +162,7 @@ public class Changelog001Init {
 						"        }\n" + // End of location
 						"}")
 				.description("Tempalte of the proxy server setting").type(ConfigType.STRING).build());
-	}
 
-	@ChangeSet(order = "006", id = "Init_DefaultDnsProxy_Config", author = "Barnabas Szabo")
-	public void dnsDefaultProxyInit(final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
-
-		mongoTemplate.save(Config.builder().key("DNSPROXY_DEFAULT_CONFIG_ACTIVATE").value("scp /tmp/default.conf root@proxy:/etc/nginx/conf.d/default.conf")
-				.description("Command for activate the default dns proxy setup").type(ConfigType.STRING).build());
-
-		mongoTemplate.save(Config.builder().key("DNSPROXY_DEFAULT_CONFIG_TEMPLATE").value( //
-				"server {\n" + //
-						"\n" + //
-						"  listen 80;\n" + //
-						"  server_name  localhost SWARM_DNS_NAME;\n" + //
-						"\n" + //
-						"  sendfile on;\n" + //
-						"  default_type application/octet-stream;\n" + //
-						"\n" + //
-						"  gzip on;\n" + //
-						"  gzip_http_version 1.1;\n" + //
-						"  gzip_disable      \"MSIE [1-6]\\.\";\n" + //
-						"  gzip_min_length   256;\n" + //
-						"  gzip_vary         on;\n" + //
-						"  gzip_proxied      expired no-cache no-store private auth;\n" + //
-						"  gzip_types        text/plain text/css application/json application/javascript application/x-javascript text/xml application/xml application/xml+rss text/javascript;\n"
-						+ //
-						"  gzip_comp_level   9;\n" + //
-						"\n" + //
-						"  root /usr/share/nginx/html;\n" + //
-						"\n" + //
-						"  location / {\n" + //
-						"    try_files $uri $uri/ /index.html =404;\n" + //
-						"  }\n" + //
-						"\n" + //
-						"  location /api {\n" + //
-						"    proxy_set_header X-Real-IP $remote_addr;\n" + //
-						"    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n" + //
-						"    proxy_set_header Host $http_host;\n" + //
-						"    proxy_set_header X-NginX-Proxy true;\n" + //
-						"\n" + //
-						"    rewrite ^/api/?(.*) /api/$1 break;\n" + //
-						"\n" + //
-						"    proxy_pass http://server:8080;\n" + //
-						"    proxy_redirect off;\n" + //
-						"  }\n" + //
-						"  location /freeport {\n" + //
-						"    proxy_set_header X-Real-IP $remote_addr;\n" + //
-						"    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n" + //
-						"    proxy_set_header Host $http_host;\n" + //
-						"    proxy_set_header X-NginX-Proxy true;\n" + //
-						"\n" + //
-						"    rewrite ^/freeport/?(.*) /api/freeport/$1 break;\n" + //
-						"\n" + //
-						"    proxy_pass http://server:8080;\n" + //
-						"    proxy_redirect off;\n" + //
-						"  }\n" + //
-						"  location /delete {\n" + //
-						"    proxy_set_header X-Real-IP $remote_addr;\n" + //
-						"    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n" + //
-						"    proxy_set_header Host $http_host;\n" + //
-						"    proxy_set_header X-NginX-Proxy true;\n" + //
-						"\n" + //
-						"    rewrite ^/delete/?(.*) /api/delete/$1 break;\n" + //
-						"\n" + //
-						"    proxy_pass http://server:8080;\n" + //
-						"    proxy_redirect off;\n" + //
-						"  }\n" + //
-						"\n" + //
-						"}\n" + //
-						"")
-				.description("Default virtualhost tempalte of the proxy server setting").type(ConfigType.STRING).build());
 	}
 
 }

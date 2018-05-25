@@ -6,9 +6,9 @@ rm -rf dist
 mkdir -p dist
 
 cd ../client/webapp
-rm -rf node_modules
-yarn install
-npm run build
+#rm -rf node_modules
+#yarn install
+#npm run build
 
 cd ../../server
 ./mvnw clean install -DskipTests

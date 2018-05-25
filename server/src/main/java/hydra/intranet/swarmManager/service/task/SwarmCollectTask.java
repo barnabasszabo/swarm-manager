@@ -17,7 +17,6 @@ public class SwarmCollectTask implements Runnable {
 
 	@Override
 	public void run() {
-		log.info("Starting swarm ecosystem collection ...");
 		final Collection<Ecosystem> collectEcosystems = swarmService.collectEcosystems();
 
 		collectEcosystems.stream().filter(eco -> eco.isMarkedAsRemove()).forEach(eco -> {
