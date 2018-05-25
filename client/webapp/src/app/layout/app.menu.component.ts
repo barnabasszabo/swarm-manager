@@ -69,7 +69,7 @@ export class AppMenuComponent implements OnInit, OnDestroy, AfterViewInit {
         });
 
         this.model = [
-          { label: 'Dashboard', icon: 'dashboard', routerLink: ['/'] },
+          { label: 'FAQ', icon: 'fa-info', routerLink: ['/faq'] },
           {
             label: 'Pools', icon: 'menu',
             items: items,

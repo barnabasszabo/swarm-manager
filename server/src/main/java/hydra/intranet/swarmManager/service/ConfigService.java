@@ -1,5 +1,7 @@
 package hydra.intranet.swarmManager.service;
 
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +13,10 @@ public class ConfigService {
 
 	@Autowired
 	private ConfigRepository configRepository;
+
+	public Collection<Config> getAll() {
+		return configRepository.findAll();
+	}
 
 	public Config getConfig(final String key) {
 		Config cfg = configRepository.findByKey(key);

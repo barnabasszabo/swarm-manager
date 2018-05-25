@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=0.1.2-alpine
+VERSION=0.1.3-alpha1-alpine
 
 rm -rf dist
 mkdir -p dist

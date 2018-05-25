@@ -5,6 +5,7 @@ import { Pool } from './model/Pool';
 import { Ecosystem } from './model/Ecosystem';
 import { PoolResource } from './model/PoolResource';
 import { LinkGroup } from './model/LinkGroup';
+import { Faq } from './model/Faq';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,10 @@ export class SwarmService {
 
   getEcosystems(poolId: string): Observable<Ecosystem[]> {
     return this.http.get<Ecosystem[]>('/api/pool/' + poolId + '/ecosystem');
+  }
+
+  getFaq(): Observable<Faq> {
+    return this.http.get<Faq>('/api/faq');
   }
 
 }

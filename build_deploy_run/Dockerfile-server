@@ -7,14 +7,14 @@ RUN apk update \
     && rc-update add docker boot \
     && rm -rf /var/cache/apk/*
 
-USER root
-VOLUME /tmp
+COPY .ssh /root/.ssh
+RUN chmod -R 700 /root/.ssh
 
 ARG JAR_FILE
 COPY ${JAR_FILE} app.jar
 
 ENV MONGO_URI=mongodb://mongo:27017/docker-swarm-manager
-ENV JAVA_OPTS="-Xms16m -Xmx150m"
+ENV JAVA_OPTS="-Xms16m -Xmx200m"
 
 EXPOSE 8080
 

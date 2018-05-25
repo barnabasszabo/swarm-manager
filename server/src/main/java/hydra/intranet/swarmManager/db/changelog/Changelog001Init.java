@@ -8,6 +8,7 @@ import com.github.mongobee.changeset.ChangeSet;
 
 import hydra.intranet.swarmManager.domain.Config;
 import hydra.intranet.swarmManager.domain.ConfigType;
+import hydra.intranet.swarmManager.domain.Faq;
 import hydra.intranet.swarmManager.domain.Link;
 import hydra.intranet.swarmManager.domain.LinkGroup;
 import hydra.intranet.swarmManager.domain.Pool;
@@ -117,6 +118,118 @@ public class Changelog001Init {
 		mongoTemplate.save(LinkGroup.builder().poolId("sample1").displayName("Dev links").links(links2).build());
 		mongoTemplate.save(LinkGroup.builder().poolId("sample2").displayName("Dev links").links(links2).build());
 		mongoTemplate.save(LinkGroup.builder().poolId("sample3").displayName("Dev links").links(links2).build());
+	}
+
+	@ChangeSet(order = "004", id = "Init_FAQ_Document", author = "Barnabas Szabo")
+	public void faqInit(final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
+		mongoTemplate.save(Faq.builder().value("# This is the init FAQ entry").build());
+	}
+
+	@ChangeSet(order = "005", id = "Init_DnsProxy_Config", author = "Barnabas Szabo")
+	public void dnsProxyInit(final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
+
+		mongoTemplate.save(Config.builder().key("ENABLE_DNS_PROXY_FEATURE").value("False").description("Enable the DNS Proxy feature?").type(ConfigType.BOOLEAN).build());
+
+		mongoTemplate
+				.save(Config.builder().key("DNS_PROXY_LABEL").value("custom.dnsProxy").description("Label of the friendly Dns proxy feature.").type(ConfigType.STRING).build());
+
+		mongoTemplate.save(Config.builder().key("RELOAD_PROXY_INTERVAL_IN_LOOP").value("3").description("Define the loop number of the Proxy server config reload")
+				.type(ConfigType.LONG).build());
+
+		mongoTemplate.save(Config.builder().key("DNSPROXY_DNS_REGISTER_CMD").value("echo 'FIXME'").description("DNS registration command").type(ConfigType.STRING).build());
+
+		mongoTemplate.save(Config.builder().key("DNSPROXY_DNS_REMOVE_CMD").value("echo 'FIXME'").description("DNS unregistration command").type(ConfigType.STRING).build());
+
+		mongoTemplate.save(Config.builder().key("DNSPROXY_SERVER_RELOAD").value("ssh root@proxy \"nginx -s reload\"").description("Proxy server reload command")
+				.type(ConfigType.STRING).build());
+
+		mongoTemplate.save(Config.builder().key("DNSPROXY_MULTI_SERVER_CONFIG_ACTIVATE").value("scp /tmp/gen.DNS_NAME.conf root@proxy:/etc/nginx/conf.d/gen.DNS_NAME.conf")
+				.description("Command for activate the dns proxy setup").type(ConfigType.STRING).build());
+
+		mongoTemplate.save(Config.builder().key("DNSPROXY_MULTI_SERVER_CONFIG_TEMPLATE").value( //
+				"server {\n" + // Server start
+						"        listen 80;\n" + // Listen on default port
+						"        server_name DNS_NAME;\n" + // new DNS name
+						"        root /usr/share/nginx/html;\n" + // default HTML location
+						"        location / {\n" + // location definition
+						"                access_log off;\n" + // No access log
+						"                proxy_set_header X-Real-IP $remote_addr;\n" + // Set header
+						"                proxy_set_header Host $host;\n" + // Set header
+						"                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n" + // Set header
+						"                proxy_set_header Upgrade $http_upgrade;\n" + // Set header
+						"                proxy_set_header Connection \"upgrade\";\n" + // Set header
+						"                proxy_http_version 1.1;\n" + // Set header for websocket
+						"                proxy_pass FULL_TARGET_ADDRESS;\n" + // target address
+						"        }\n" + // End of location
+						"}")
+				.description("Tempalte of the proxy server setting").type(ConfigType.STRING).build());
+	}
+
+	@ChangeSet(order = "006", id = "Init_DefaultDnsProxy_Config", author = "Barnabas Szabo")
+	public void dnsDefaultProxyInit(final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
+
+		mongoTemplate.save(Config.builder().key("DNSPROXY_DEFAULT_CONFIG_TEMPLATE").value( //
+				"server {\n" + //
+						"\n" + //
+						"  listen 80;\n" + //
+						"  server_name  localhost SWARM_DNS_NAME;\n" + //
+						"\n" + //
+						"  sendfile on;\n" + //
+						"  default_type application/octet-stream;\n" + //
+						"\n" + //
+						"  gzip on;\n" + //
+						"  gzip_http_version 1.1;\n" + //
+						"  gzip_disable      \"MSIE [1-6]\\.\";\n" + //
+						"  gzip_min_length   256;\n" + //
+						"  gzip_vary         on;\n" + //
+						"  gzip_proxied      expired no-cache no-store private auth;\n" + //
+						"  gzip_types        text/plain text/css application/json application/javascript application/x-javascript text/xml application/xml application/xml+rss text/javascript;\n"
+						+ //
+						"  gzip_comp_level   9;\n" + //
+						"\n" + //
+						"  root /usr/share/nginx/html;\n" + //
+						"\n" + //
+						"  location / {\n" + //
+						"    try_files $uri $uri/ /index.html =404;\n" + //
+						"  }\n" + //
+						"\n" + //
+						"  location /api {\n" + //
+						"    proxy_set_header X-Real-IP $remote_addr;\n" + //
+						"    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n" + //
+						"    proxy_set_header Host $http_host;\n" + //
+						"    proxy_set_header X-NginX-Proxy true;\n" + //
+						"\n" + //
+						"    rewrite ^/api/?(.*) /api/$1 break;\n" + //
+						"\n" + //
+						"    proxy_pass http://server:8080;\n" + //
+						"    proxy_redirect off;\n" + //
+						"  }\n" + //
+						"  location /freeport {\n" + //
+						"    proxy_set_header X-Real-IP $remote_addr;\n" + //
+						"    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n" + //
+						"    proxy_set_header Host $http_host;\n" + //
+						"    proxy_set_header X-NginX-Proxy true;\n" + //
+						"\n" + //
+						"    rewrite ^/freeport/?(.*) /api/freeport/$1 break;\n" + //
+						"\n" + //
+						"    proxy_pass http://server:8080;\n" + //
+						"    proxy_redirect off;\n" + //
+						"  }\n" + //
+						"  location /delete {\n" + //
+						"    proxy_set_header X-Real-IP $remote_addr;\n" + //
+						"    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n" + //
+						"    proxy_set_header Host $http_host;\n" + //
+						"    proxy_set_header X-NginX-Proxy true;\n" + //
+						"\n" + //
+						"    rewrite ^/delete/?(.*) /api/delete/$1 break;\n" + //
+						"\n" + //
+						"    proxy_pass http://server:8080;\n" + //
+						"    proxy_redirect off;\n" + //
+						"  }\n" + //
+						"\n" + //
+						"}\n" + //
+						"")
+				.description("Default virtualhost tempalte of the proxy server setting").type(ConfigType.STRING).build());
 	}
 
 }

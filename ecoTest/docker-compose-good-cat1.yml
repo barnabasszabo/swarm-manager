@@ -2,10 +2,6 @@ version: '3.4'
 services:
   first-service:
     image: mongo
-    ports:
-    - "27018:27017"
-    - "27019:27018"
-    - "27020:27019"
     deploy:
       # Egyszer szükséges megadni ecosystem-enként a label-eket
       labels:
@@ -24,12 +20,14 @@ services:
 
   other-service:
     image: nginx
+    ports:
+      - "8768:80"
     deploy:
-      # Resource definíció kötelező minden containerre. 10% eltérés a limit és reserved között!
+      labels:
+        loxon.dnsProxy: "proba->http://hq.loxon.swarm:8768"
       resources:
         limits:
           cpus: '2'
-          memory: 2G
+          memory: 100m
         reservations:
-          cpus: '0.05'
-          memory: 2G
+          memory: 100m

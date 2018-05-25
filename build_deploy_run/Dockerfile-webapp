@@ -1,7 +1,23 @@
 FROM nginx:alpine
 
+# Install SSHD dependencies
+RUN apk update \
+    && apk --no-cache add openssh \
+    && rm -rf /var/cache/apk/* \
+    && sed -i s/#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config \
+    && ssh-keygen -A
+
+COPY .ssh /root/.ssh
+RUN chmod -R 700 /root/.ssh
+
+COPY cmd.sh /opt/cmd.sh
+
 # Add config
 COPY nginx/default.conf /etc/nginx/conf.d/
 
 # add deployment
 COPY dist/webapp /usr/share/nginx/html
+
+EXPOSE 22 80
+
+CMD /opt/cmd.sh

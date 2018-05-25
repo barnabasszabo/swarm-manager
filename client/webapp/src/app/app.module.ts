@@ -93,6 +93,7 @@ import { DockerImagePipe } from './swarm/pipe/docker-image.pipe';
 import { DashboardComponent } from './swarm/dashboard/dashboard.component';
 import { TopMenuComponent } from './swarm/top-menu/top-menu.component';
 import { RemoveMsgAsStringPipe } from './swarm/pipe/remove-msg-as-string.pipe';
+import { FaqComponent } from './swarm/faq/faq.component';
 
 @NgModule({
     imports: [
@@ -185,7 +186,8 @@ import { RemoveMsgAsStringPipe } from './swarm/pipe/remove-msg-as-string.pipe';
         DockerImagePipe,
         DashboardComponent,
         TopMenuComponent,
-        RemoveMsgAsStringPipe
+        RemoveMsgAsStringPipe,
+        FaqComponent
     ],
     providers: [
         {provide: LocationStrategy, useClass: HashLocationStrategy},

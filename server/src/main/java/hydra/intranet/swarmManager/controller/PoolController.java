@@ -17,6 +17,7 @@ import hydra.intranet.swarmManager.domain.Ecosystem;
 import hydra.intranet.swarmManager.domain.LinkGroup;
 import hydra.intranet.swarmManager.domain.Pool;
 import hydra.intranet.swarmManager.domain.PoolResource;
+import hydra.intranet.swarmManager.domain.SwarmResource;
 import hydra.intranet.swarmManager.service.PoolService;
 import hydra.intranet.swarmManager.service.ResourceService;
 import hydra.intranet.swarmManager.service.SwarmService;
@@ -50,19 +51,20 @@ public class PoolController extends BaseController {
 		if (!StringUtils.isEmpty(poolId)) {
 			if ("all".equals(poolId)) {
 				final PoolResource resultTmp = PoolResource.builder().build();
-				resourceService.getPoolResources(swarmService.getEcosystems()).forEach(pr -> {
-					// Dedicated
-					resultTmp.getDedicated().addLimitCpu(pr.getDedicated().getLimitCpu());
-					resultTmp.getDedicated().addReservedCpu(pr.getDedicated().getReservedCpu());
-					resultTmp.getDedicated().addLimitMemory(pr.getDedicated().getLimitMemory());
-					resultTmp.getDedicated().addReservedMemory(pr.getDedicated().getReservedMemory());
 
-					// Used
-					resultTmp.getUsed().addLimitCpu(pr.getUsed().getLimitCpu());
-					resultTmp.getUsed().addReservedCpu(pr.getUsed().getReservedCpu());
-					resultTmp.getUsed().addLimitMemory(pr.getUsed().getLimitMemory());
-					resultTmp.getUsed().addReservedMemory(pr.getUsed().getReservedMemory());
+				final SwarmResource swarmResources = resourceService.getWorkspaceSwarmResources();
+				resultTmp.getDedicated().addLimitCpu(swarmResources.getLimitCpu());
+				resultTmp.getDedicated().addLimitMemory(swarmResources.getLimitMemory());
+				resultTmp.getDedicated().addReservedCpu(swarmResources.getReservedCpu());
+				resultTmp.getDedicated().addReservedMemory(swarmResources.getReservedMemory());
+
+				swarmService.getEcosystems().forEach(eco -> {
+					resultTmp.getUsed().addLimitCpu(eco.getUsedResource().getLimitCpu());
+					resultTmp.getUsed().addReservedCpu(eco.getUsedResource().getReservedCpu());
+					resultTmp.getUsed().addLimitMemory(eco.getUsedResource().getLimitMemory());
+					resultTmp.getUsed().addReservedMemory(eco.getUsedResource().getReservedMemory());
 				});
+
 				result = resultTmp;
 			} else {
 				result = resourceService.getPoolResource(poolId);

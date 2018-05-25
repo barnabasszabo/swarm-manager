@@ -4,8 +4,6 @@ services:
     image: mongo
     ports:
       - "29019:27017"
-    volumes:
-      - "/opt/nfs/system/swarm-manager/db/mongo:/data/db"
     deploy:
       resources:
         limits:
@@ -14,11 +12,18 @@ services:
         reservations:
           memory: "100m"
   proxy:
-    image: szabobar/swarm-manager-proxy:0.1-beta-alpine
+    image: szabobar/swarm-manager-proxy:0.1.2-beta1-alpine
     depends_on:
       - server
     ports:
       - "80:80"
+    dns:
+      - 192.168.0.3
+      - 192.168.0.4
+      - 8.8.8.8
+    dns_search:
+      - loxon.swarm
+      - loxon.local
     deploy:
       resources:
         limits:
@@ -27,7 +32,7 @@ services:
         reservations:
           memory: "50m"
   server:
-    image: szabobar/swarm-manager-server:0.1-beta-alpine
+    image: szabobar/swarm-manager-server:0.1.2-beta1-alpine
     depends_on:
       - mongo
     volumes:
@@ -45,4 +50,3 @@ services:
           memory: "155m"
         reservations:
           memory: "155m"
-    

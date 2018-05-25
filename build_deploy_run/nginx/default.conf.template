@@ -1,7 +1,7 @@
 server {
 
   listen 80;
-  server_name  localhost hq.loxon.swarm;
+  server_name  localhost SWARM_DNS_NAME;
 
   sendfile on;
   default_type application/octet-stream;
