@@ -50,7 +50,16 @@
   <p-tabView>
 
     <p-tabPanel header="Ecosystems">
-      <p-table [value]="ecosystems" [paginator]="true" [rows]="20" [resizableColumns]="true" dataKey="name">
+
+      <p-table [value]="ecosystems | searchIn : globalFilter" [paginator]="false" [rows]="50" [resizableColumns]="true" dataKey="name">
+
+        <ng-template pTemplate="caption">
+          <div class="text-right ">
+            <i class="fa fa-search" style="margin:0px 4px 0 0"></i>
+            <input class="global-search" type="text" pInputText size="50" placeholder="Global Filter" name="globalFilter" [(ngModel)]="globalFilter" />
+          </div>
+        </ng-template>
+
         <ng-template pTemplate="header">
           <tr>
             <th class="col-expand"></th>

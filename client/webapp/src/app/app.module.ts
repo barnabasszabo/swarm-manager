@@ -94,6 +94,7 @@ import { DashboardComponent } from './swarm/dashboard/dashboard.component';
 import { TopMenuComponent } from './swarm/top-menu/top-menu.component';
 import { RemoveMsgAsStringPipe } from './swarm/pipe/remove-msg-as-string.pipe';
 import { FaqComponent } from './swarm/faq/faq.component';
+import { SearchInPipe } from './swarm/pipe/search-in.pipe';
 
 @NgModule({
     imports: [
@@ -187,7 +188,8 @@ import { FaqComponent } from './swarm/faq/faq.component';
         DashboardComponent,
         TopMenuComponent,
         RemoveMsgAsStringPipe,
-        FaqComponent
+        FaqComponent,
+        SearchInPipe
     ],
     providers: [
         {provide: LocationStrategy, useClass: HashLocationStrategy},

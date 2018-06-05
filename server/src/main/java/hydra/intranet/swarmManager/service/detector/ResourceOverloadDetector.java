@@ -49,7 +49,7 @@ public class ResourceOverloadDetector extends AbstractDetector {
 				final String e2LastLabel = e2.getLastLabel(configService.getString("PRIORITY_LABEL"));
 				final Integer prio1 = e1LastLabel != null ? new Integer(e1LastLabel) : 0;
 				final Integer prio2 = e2LastLabel != null ? new Integer(e2LastLabel) : 0;
-				return prio2 - prio1;
+				return prio1 - prio2;
 			}).forEach(eco -> {
 				if (isOver("CHECK_CPU_IN_OVERLOAD_DETECTION", diff.cpu, eco.getUsedResource().getReservedCpu())
 						|| isOver("CHECK_MEMORY_IN_OVERLOAD_DETECTION", diff.memory, eco.getUsedResource().getReservedMemory())) {

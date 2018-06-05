@@ -21,6 +21,7 @@ export class PoolEcosystemPageComponent {
   poolLinkGroupDisplay = false;
   ecosystems: Ecosystem[];
   host = window.location.hostname;
+  globalFilter: string;
 
   poolOverviewCpuChart = {};
   poolOverviewMemoryChart = {};

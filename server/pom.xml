@@ -23,6 +23,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
+        <lombok.version>1.16.22</lombok.version> <!-- minimal version in case of java 10 -->
 		
 		<!-- HELL -->
 		<jersey.version>2.26</jersey.version>
