@@ -161,7 +161,7 @@ public class SwarmService {
 			if (isStack) {
 				addTaskToEcosystem(ecosystems, name, tasks, maybeLabels, ports, service);
 			} else {
-				final Ecosystem eco = Ecosystem.builder().isStack(isStack).name(name).build();
+				final Ecosystem eco = Ecosystem.builder().created(service.getCreatedAt()).updated(service.getUpdatedAt()).isStack(isStack).name(name).build();
 				eco.addLabel(maybeLabels);
 				eco.addTasks(tasks, service);
 				eco.addPorts(ports);
@@ -175,7 +175,7 @@ public class SwarmService {
 			final List<PortConfig> ports, final Service service) {
 		final List<Ecosystem> ecosystemArray = ecosystems.stream().filter(s -> s.getName().equals(stackName)).collect(Collectors.toList());
 		if (CollectionUtils.isEmpty(ecosystemArray)) { // Create new stack
-			final Ecosystem eco = Ecosystem.builder().isStack(true).name(stackName).build();
+			final Ecosystem eco = Ecosystem.builder().created(service.getCreatedAt()).updated(service.getUpdatedAt()).isStack(true).name(stackName).build();
 			eco.addLabel(maybeLabels);
 			eco.addTasks(tasks, service);
 			eco.addPorts(ports);

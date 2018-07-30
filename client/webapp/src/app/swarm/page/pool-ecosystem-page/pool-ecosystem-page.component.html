@@ -68,6 +68,10 @@
               Name
               <p-sortIcon [field]="'name'"></p-sortIcon>
             </th>
+            <th [pSortableColumn]="'updated'" pResizableColumn>
+              Updated
+              <p-sortIcon [field]="'updated'"></p-sortIcon>
+            </th>
             <th pResizableColumn>Info</th>
             <th class="col-resource" pResizableColumn>Resources</th>
           </tr>
@@ -93,7 +97,11 @@
               <i *ngIf="eco.markedAsRemove" class="fa fa-trash fa-2x" [pTooltip]="'Marked this ecosystem as a deletion.<br/>Reason: ' + (eco.markedMessage | removeMsgAsString)"
                 [escape]="false"></i>
               {{eco.name}}
+            </td>
 
+            <!-- Updated -->
+            <td>
+              {{eco.updated | date: 'medium'}}
             </td>
 
             <!-- Info -->

@@ -1,12 +1,12 @@
 #!/bin/bash
 
-VERSION=0.1.5-alpine
+VERSION=0.1.6-alpine
 
 rm -rf dist
 mkdir -p dist
 
 cd ../client/webapp
-rm -rf node_modules
+rm -rf node_modules && rm -rf *lock*
 yarn install
 npm run build
 
