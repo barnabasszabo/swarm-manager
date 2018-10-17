@@ -27,6 +27,8 @@ export class Ecosystem {
 
   labels: any;
 
+  ttlEndDate?: Date;
+
   portConfig: any[]; // TODO model the github api!
 
 }

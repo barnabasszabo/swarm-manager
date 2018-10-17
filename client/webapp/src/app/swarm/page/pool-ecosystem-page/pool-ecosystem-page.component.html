@@ -96,12 +96,13 @@
                 [escape]="false"></i>
               <i *ngIf="eco.markedAsRemove" class="fa fa-trash fa-2x" [pTooltip]="'Marked this ecosystem as a deletion.<br/>Reason: ' + (eco.markedMessage | removeMsgAsString)"
                 [escape]="false"></i>
-              {{eco.name}}
-            </td>
+                {{eco.name}}
+              </td>
 
-            <!-- Updated -->
-            <td>
-              {{eco.updated | date: 'medium'}}
+              <!-- Updated -->
+              <td>
+                {{eco.updated | date: 'medium'}}
+                <img *ngIf="eco.ttlEndDate"  class="ttl" src="assets/ttl.png" [pTooltip]="'TTL end date: <br/>' + (eco.ttlEndDate | date: 'medium' )" [escape]="false" />
             </td>
 
             <!-- Info -->

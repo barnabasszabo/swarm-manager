@@ -64,6 +64,7 @@ public class Ecosystem implements Serializable {
 
 	private Date created;
 	private Date updated;
+	private Date ttlEndDate;
 
 	public Ecosystem addRemoveMessage(String msg) {
 		markedAsRemove = true;

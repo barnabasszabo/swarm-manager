@@ -170,4 +170,9 @@ public class Changelog001Init {
 		mongoTemplate.save(Config.builder().key("REMOVE_CHANCE_NUM").value("3").description("How many check circle allowed before remove the ecosystem.").type(ConfigType.LONG).build());
 	}
 	
+	@ChangeSet(order = "007", id = "Add_TTL", author = "Barnabas Szabo")
+	public void ttlInit(final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
+		mongoTemplate.save(Config.builder().key("TTL_LABEL").value("loxon.ttl").description("Environment live in minutes").type(ConfigType.LONG).build());
+	}
+	
 }
