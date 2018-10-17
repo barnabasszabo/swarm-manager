@@ -165,4 +165,9 @@ public class Changelog001Init {
 
 	}
 
+	@ChangeSet(order = "006", id = "Add_Change_before_Remove_command", author = "Barnabas Szabo")
+	public void chanceInit(final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
+		mongoTemplate.save(Config.builder().key("REMOVE_CHANCE_NUM").value("3").description("How many check circle allowed before remove the ecosystem.").type(ConfigType.LONG).build());
+	}
+	
 }

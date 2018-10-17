@@ -1,5 +1,5 @@
-import { Pool } from "./Pool";
-import { SwarmResource } from "./SwarmResource";
+import { Pool } from './Pool';
+import { SwarmResource } from './SwarmResource';
 
 export class PoolResource {
   pool: Pool;

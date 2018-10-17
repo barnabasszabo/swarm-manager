@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -69,9 +70,12 @@ public class SwarmService {
 	@Autowired
 	private ApplicationEventPublisher applicationEventPublisher;
 
+	private Map<String, Integer> lastChanceMap = new HashMap<>();
+
 	@EventListener(ApplicationReadyEvent.class)
 	public void doSomethingAfterStartup() {
-		final DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().withDockerHost(configService.getString("DOCKER_HOST")).build();
+		final DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+				.withDockerHost(configService.getString("DOCKER_HOST")).build();
 		client = DockerClientBuilder.getInstance(config).build();
 
 		final Trigger nextTrigger = triggerContext -> {
@@ -132,7 +136,8 @@ public class SwarmService {
 
 	public void removeEcosystem(final Ecosystem ecosystem) {
 		if (configService.isTrue("EXEC_REMOVE_COMMAND")) {
-			final String rmCommand = ecosystem.isStack() ? "docker stack rm " + ecosystem.getName() : "docker service rm " + ecosystem.getName();
+			final String rmCommand = ecosystem.isStack() ? "docker stack rm " + ecosystem.getName()
+					: "docker service rm " + ecosystem.getName();
 			try {
 				log.info("Remove ecosystem: {}", ecosystem.getName());
 				execService.exec(rmCommand);
@@ -140,6 +145,30 @@ public class SwarmService {
 			} catch (final Exception e) {
 				log.error("Error in remove command", e);
 			}
+		}
+	}
+
+	public boolean isChangeExpire(Ecosystem eco) {
+		if (eco.isMarkedAsRemove()) {
+			if (lastChanceMap.containsKey(eco.getName())) {
+				Integer chanceNum = lastChanceMap.get(eco.getName());
+				if (chanceNum >= configService.getLong("REMOVE_CHANCE_NUM")) {
+					return true;
+				} else {
+					lastChanceMap.put(eco.getName(), chanceNum + 1);
+				}
+			} else {
+				lastChanceMap.put(eco.getName(), 1);
+			}
+		}
+		return false;
+	}
+
+	@EventListener
+	public void ecosystemRemoved(final EcosystemRemoved event) {
+		final Ecosystem eco = event.getEcosystem();
+		if (lastChanceMap.containsKey(eco.getName())) {
+			lastChanceMap.remove(eco.getName());
 		}
 	}
 
@@ -161,7 +190,8 @@ public class SwarmService {
 			if (isStack) {
 				addTaskToEcosystem(ecosystems, name, tasks, maybeLabels, ports, service);
 			} else {
-				final Ecosystem eco = Ecosystem.builder().created(service.getCreatedAt()).updated(service.getUpdatedAt()).isStack(isStack).name(name).build();
+				final Ecosystem eco = Ecosystem.builder().created(service.getCreatedAt())
+						.updated(service.getUpdatedAt()).isStack(isStack).name(name).build();
 				eco.addLabel(maybeLabels);
 				eco.addTasks(tasks, service);
 				eco.addPorts(ports);
@@ -171,11 +201,14 @@ public class SwarmService {
 		return ecosystems;
 	}
 
-	private void addTaskToEcosystem(final Collection<Ecosystem> ecosystems, final String stackName, final List<Task> tasks, final Optional<Map<String, String>> maybeLabels,
-			final List<PortConfig> ports, final Service service) {
-		final List<Ecosystem> ecosystemArray = ecosystems.stream().filter(s -> s.getName().equals(stackName)).collect(Collectors.toList());
+	private void addTaskToEcosystem(final Collection<Ecosystem> ecosystems, final String stackName,
+			final List<Task> tasks, final Optional<Map<String, String>> maybeLabels, final List<PortConfig> ports,
+			final Service service) {
+		final List<Ecosystem> ecosystemArray = ecosystems.stream().filter(s -> s.getName().equals(stackName))
+				.collect(Collectors.toList());
 		if (CollectionUtils.isEmpty(ecosystemArray)) { // Create new stack
-			final Ecosystem eco = Ecosystem.builder().created(service.getCreatedAt()).updated(service.getUpdatedAt()).isStack(true).name(stackName).build();
+			final Ecosystem eco = Ecosystem.builder().created(service.getCreatedAt()).updated(service.getUpdatedAt())
+					.isStack(true).name(stackName).build();
 			eco.addLabel(maybeLabels);
 			eco.addTasks(tasks, service);
 			eco.addPorts(ports);

@@ -19,7 +19,7 @@ public class SwarmCollectTask implements Runnable {
 	public void run() {
 		final Collection<Ecosystem> collectEcosystems = swarmService.collectEcosystems();
 
-		collectEcosystems.stream().filter(eco -> eco.isMarkedAsRemove()).forEach(eco -> {
+		collectEcosystems.stream().filter(eco -> eco.isMarkedAsRemove() && swarmService.isChangeExpire(eco)).forEach(eco -> {
 			swarmService.removeEcosystem(eco);
 		});
 	}
