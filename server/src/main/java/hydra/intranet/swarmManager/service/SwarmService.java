@@ -120,7 +120,7 @@ public class SwarmService {
 			d.detect(ecosystems);
 		});
 
-		log.info("Ecosystem collected in {} millisec", (System.currentTimeMillis() - start));
+		log.debug("Ecosystem collected in {} millisec", (System.currentTimeMillis() - start));
 
 		this.ecosystems = ecosystems;
 		return ecosystems;
@@ -139,7 +139,7 @@ public class SwarmService {
 			final String rmCommand = ecosystem.isStack() ? "docker stack rm " + ecosystem.getName()
 					: "docker service rm " + ecosystem.getName();
 			try {
-				log.info("Remove ecosystem: {}", ecosystem.getName());
+				log.info("Remove ecosystem: {}", rmCommand);
 				execService.exec(rmCommand);
 				applicationEventPublisher.publishEvent(new EcosystemRemoved(this, ecosystem));
 			} catch (final Exception e) {

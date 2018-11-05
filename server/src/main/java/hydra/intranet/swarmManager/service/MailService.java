@@ -46,6 +46,8 @@ public class MailService {
 			message.setTo(to);
 			message.setSubject(configService.getString("EMAIL_SUBJECT_PREFIX") + title);
 			message.setText(body);
+
+			log.info("Send email to {} with title: {}", to, title);
 			emailSender.send(message);
 		} catch (final Exception e) {
 			log.error("Can not send email! ", e);
