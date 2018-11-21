@@ -174,30 +174,34 @@ public class SwarmService {
 
 	private Collection<Ecosystem> collectRawEcosystems() {
 		final Collection<Ecosystem> ecosystems = new ArrayList<>();
-		final List<Service> rawServices = client.listServicesCmd().exec();
-		rawServices.forEach(service -> {
-			final Optional<Map<String, String>> maybeLabels = Optional.fromNullable(service.getSpec().getLabels());
-			final boolean isStack = maybeLabels.isPresent() && maybeLabels.get().containsKey(DOCKER_STACK_LABEL);
-			final String name = isStack ? maybeLabels.get().get(DOCKER_STACK_LABEL) : service.getSpec().getName();
-			final List<Task> tasks = client.listTasksCmd().withServiceFilter(service.getSpec().getName()).exec();
-
-			List<PortConfig> ports = Collections.emptyList();
-			try {
-				ports = Arrays.asList(service.getEndpoint().getPorts());
-			} catch (final Exception e) {
-			}
-
-			if (isStack) {
-				addTaskToEcosystem(ecosystems, name, tasks, maybeLabels, ports, service);
-			} else {
-				final Ecosystem eco = Ecosystem.builder().created(service.getCreatedAt())
-						.updated(service.getUpdatedAt()).isStack(isStack).name(name).build();
-				eco.addLabel(maybeLabels);
-				eco.addTasks(tasks, service);
-				eco.addPorts(ports);
-				ecosystems.add(eco);
-			}
-		});
+		try {
+			final List<Service> rawServices = client.listServicesCmd().exec();
+			rawServices.forEach(service -> {
+				final Optional<Map<String, String>> maybeLabels = Optional.fromNullable(service.getSpec().getLabels());
+				final boolean isStack = maybeLabels.isPresent() && maybeLabels.get().containsKey(DOCKER_STACK_LABEL);
+				final String name = isStack ? maybeLabels.get().get(DOCKER_STACK_LABEL) : service.getSpec().getName();
+				final List<Task> tasks = client.listTasksCmd().withServiceFilter(service.getSpec().getName()).exec();
+	
+				List<PortConfig> ports = Collections.emptyList();
+				try {
+					ports = Arrays.asList(service.getEndpoint().getPorts());
+				} catch (final Exception e) {
+				}
+	
+				if (isStack) {
+					addTaskToEcosystem(ecosystems, name, tasks, maybeLabels, ports, service);
+				} else {
+					final Ecosystem eco = Ecosystem.builder().created(service.getCreatedAt())
+							.updated(service.getUpdatedAt()).isStack(isStack).name(name).build();
+					eco.addLabel(maybeLabels);
+					eco.addTasks(tasks, service);
+					eco.addPorts(ports);
+					ecosystems.add(eco);
+				}
+			});
+		} catch (Exception e) {
+			log.error("Error in ecosystem collection process...", e);
+		}
 		return ecosystems;
 	}
 
