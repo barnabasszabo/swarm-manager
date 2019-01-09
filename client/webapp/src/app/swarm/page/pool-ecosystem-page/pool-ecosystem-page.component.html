@@ -139,12 +139,10 @@
                         [escape]="false">
                         <i class="material-icons">laptop_mac</i> {{task.node.Description.Hostname}}
                       </span>
-                      <div class="left declared-resources" [pTooltip]="'<h4>CPU</h4>Dedicated: ' + (task.task.Spec.Resources.Reservations.NanoCPUs / 1000000000).toFixed(2) + ' core <br/>Limit: ' + (task.task.Spec.Resources.Limits.NanoCPUs / 1000000000).toFixed(2) + ' core<hr/><h4>Memory</h4>Dedicated: ' + (task.task.Spec.Resources.Reservations.MemoryBytes / 1073741824).toFixed(2) + ' GB <br/>Limit: ' + (task.task.Spec.Resources.Limits.MemoryBytes / 1073741824).toFixed(2) + ' GB'"
+                      <div class="left declared-resources" [pTooltip]="'<h4>CPU</h4>Dedicated: ' + (task | nanoCPUFormatter:'reserve') + ' core <br/>Limit: ' + (task | nanoCPUFormatter:'limit') + ' core<hr/><h4>Memory</h4>Dedicated: ' + (task|memoryByteFormatter:'reserve') + ' GB <br/>Limit: ' + (task|memoryByteFormatter:'limit') + ' GB'"
                         [escape]="false">
-                        <div>CPU: {{ (task.task.Spec.Resources.Reservations.NanoCPUs / 1000000000).toFixed(2) }} core -> {{ (task.task.Spec.Resources.Limits.NanoCPUs
-                          / 1000000000).toFixed(2) }} core</div>
-                        <div>Mem: {{ (task.task.Spec.Resources.Reservations.MemoryBytes / 1073741824).toFixed(2) }} GB -> {{ (task.task.Spec.Resources.Limits.MemoryBytes
-                          / 1073741824).toFixed(2) }} GB</div>
+                        <div>CPU: reserve: {{ (task | nanoCPUFormatter:'reserve') }} core ; limit: {{ (task | nanoCPUFormatter:'limit') }} core</div>
+                        <div>Mem: reserve: {{ (task|memoryByteFormatter:'reserve') }} GB ; limit: {{ (task|memoryByteFormatter:'limit') }} GB</div>
                       </div>
                     </div>
                     <div class="clearfix box-footer">

@@ -95,6 +95,8 @@ import { TopMenuComponent } from './swarm/top-menu/top-menu.component';
 import { RemoveMsgAsStringPipe } from './swarm/pipe/remove-msg-as-string.pipe';
 import { FaqComponent } from './swarm/faq/faq.component';
 import { SearchInPipe } from './swarm/pipe/search-in.pipe';
+import { NanoCPUFormatterPipe } from './swarm/pipe/nano-cpuformatter.pipe';
+import { MemoryByteFormatterPipe } from './swarm/pipe/memory-byte-formatter.pipe';
 
 @NgModule({
     imports: [
@@ -189,7 +191,9 @@ import { SearchInPipe } from './swarm/pipe/search-in.pipe';
         TopMenuComponent,
         RemoveMsgAsStringPipe,
         FaqComponent,
-        SearchInPipe
+        SearchInPipe,
+        NanoCPUFormatterPipe,
+        MemoryByteFormatterPipe
     ],
     providers: [
         {provide: LocationStrategy, useClass: HashLocationStrategy},
