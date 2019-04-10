@@ -170,6 +170,13 @@ public class SwarmService {
 		if (lastChanceMap.containsKey(eco.getName())) {
 			lastChanceMap.remove(eco.getName());
 		}
+		
+		String cmd = configService.getString("DNS_NAMESERVER_UNREGISTER_CURL").replace("ECO-NAME", eco.getName());
+		try {
+			execService.exec(cmd);
+		} catch (Exception e1) {
+			log.error("DNS Unregistration command error {}", cmd, e1);
+		}
 	}
 
 	private Collection<Ecosystem> collectRawEcosystems() {

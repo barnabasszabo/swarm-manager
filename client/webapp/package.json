@@ -29,8 +29,8 @@
     "moment": "^2.19.3",
     "primeng": "^5.2.5",
     "quill": "1.1.8",
-    "rxjs": "6",
-    "rxjs-compat": "6",
+    "rxjs": "6.0.0",
+    "rxjs-compat": "6.0.0",
     "web-animations-js": "2.3.1",
     "zone.js": "^0.8.26"
   },
@@ -46,6 +46,6 @@
     "codelyzer": "~4.2.1",
     "ts-node": "~5.0.1",
     "tslint": "~5.9.1",
-    "typescript": "~2.7.2"
+    "typescript": "~2.8.0"
   }
 }

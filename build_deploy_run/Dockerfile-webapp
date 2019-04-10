@@ -1,5 +1,8 @@
 FROM nginx:alpine
 
+USER root
+RUN passwd -d 'root'
+
 # Install SSHD dependencies
 RUN apk update \
     && apk --no-cache add openssh \

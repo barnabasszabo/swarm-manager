@@ -9,6 +9,7 @@ services:
         loxon.pool: "mycat1" # Milyen csoportba fog tartozni, a felületen a csoportnál megadott pattern-re illeszkedjen
         loxon.cleanEmail: "PROJECT_EMAIL@loxon.eu" # Ha töröl a rendszer egy környezetet, akkor ide jelzi, hogy miért
         loxon.priority: 70 # 0 és 100 között. Ha a területen túllógnak az ecosystem-ek, akkor a legalacsonyabbakat törli
+        loxon.dnsconfurl: "http://repo.intranet.loxon.eu/repository/COMMON-RAW/test/test-location.conf"
 
       # Resource definíció kötelező minden containerre. Limit és Reserved értékek között 10% lehet csak!
       resources:
@@ -23,8 +24,6 @@ services:
     ports:
       - "8768:80"
     deploy:
-      labels:
-        loxon.dnsProxy: "proba->http://hq.loxon.swarm:8768"
       resources:
         limits:
           cpus: '2'

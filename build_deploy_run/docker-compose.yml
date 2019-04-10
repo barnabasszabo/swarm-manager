@@ -12,7 +12,7 @@ services:
         reservations:
           memory: "100m"
   proxy:
-    image: szabobar/swarm-manager-proxy:0.1.6-alpine
+    image: szabobar/swarm-manager-proxy:0.2.0-alpine
     depends_on:
       - server
     ports:
@@ -32,11 +32,18 @@ services:
         reservations:
           memory: "50m"
   server:
-    image: szabobar/swarm-manager-server:0.1.6-alpine
+    image: szabobar/swarm-manager-server:0.2.0-alpine
     depends_on:
       - mongo
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
+    dns:
+      - 192.168.0.3
+      - 192.168.0.4
+      - 8.8.8.8
+    dns_search:
+      - loxon.swarm
+      - loxon.local
     deploy:
       placement:
         constraints: [node.role == manager]
