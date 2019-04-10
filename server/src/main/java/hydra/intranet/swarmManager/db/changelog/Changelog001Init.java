@@ -2,6 +2,7 @@ package hydra.intranet.swarmManager.db.changelog;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
@@ -173,6 +174,43 @@ public class Changelog001Init {
 	@ChangeSet(order = "007", id = "Add_TTL", author = "Barnabas Szabo")
 	public void ttlInit(final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
 		mongoTemplate.save(Config.builder().key("TTL_LABEL").value("loxon.ttl").description("Environment live in minutes").type(ConfigType.LONG).build());
+	}
+	
+	@ChangeSet(order = "008", id = "Refactor_DnsProxy_Config", author = "Barnabas Szabo")
+	public void dnsProxyRefactor(final org.springframework.data.mongodb.core.MongoTemplate mongoTemplate) {
+		List<Config> findAll = mongoTemplate.findAll(Config.class);
+		findAll.forEach(a -> {
+			// Modify
+			if ("ENABLE_DNS_PROXY_FEATURE".equalsIgnoreCase(a.getKey())) {
+				a.setValue("True");
+				mongoTemplate.save(a);
+			}
+			if ("DNS_PROXY_LABEL".equalsIgnoreCase(a.getKey())) {
+				a.setValue("loxon.dnsconfurl");
+				mongoTemplate.save(a);
+			}
+			
+			// Delete
+			if ("RELOAD_PROXY_INTERVAL_IN_LOOP".equalsIgnoreCase(a.getKey())) {
+				mongoTemplate.remove(a);
+			}
+			if ("DNSPROXY_DNS_REGISTER_CMD".equalsIgnoreCase(a.getKey())) {
+				mongoTemplate.remove(a);
+			}
+			if ("DNSPROXY_DNS_REMOVE_CMD".equalsIgnoreCase(a.getKey())) {
+				mongoTemplate.remove(a);
+			}
+			if ("DNSPROXY_SERVER_RELOAD".equalsIgnoreCase(a.getKey())) {
+				mongoTemplate.remove(a);
+			}
+			if ("DNSPROXY_MULTI_SERVER_CONFIG_ACTIVATE".equalsIgnoreCase(a.getKey())) {
+				mongoTemplate.remove(a);
+			}
+			if ("DNSPROXY_MULTI_SERVER_CONFIG_TEMPLATE".equalsIgnoreCase(a.getKey())) {
+				mongoTemplate.remove(a);
+			}
+			
+		});
 	}
 	
 }

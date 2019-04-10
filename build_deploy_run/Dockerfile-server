@@ -7,6 +7,7 @@ RUN apk update \
     && rc-update add docker boot \
     && rm -rf /var/cache/apk/*
 
+COPY generate_conf.sh /opt/generate_conf.sh
 COPY reload_proxy.sh /opt/reload_proxy.sh
 COPY .ssh /root/.ssh
 RUN chmod -R 700 /root/.ssh

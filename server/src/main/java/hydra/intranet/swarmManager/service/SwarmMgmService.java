@@ -5,12 +5,9 @@ import java.net.Socket;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,38 +24,10 @@ public class SwarmMgmService {
 	@Autowired
 	private ExecService execService;
 
-	private Pattern pattern = Pattern.compile("(.+)\\/(.+):(.*)");
-
 	private final Random random = new Random();
 
 	public int getFreePort(final int min, final int max) {
 		return nextRandomPort(getDeclaredPorts(), min, max);
-	}
-
-	public String deleteImageFromRegistry(final String name) {
-		if (!StringUtils.isEmpty(name)) {
-			final String requestName = name.replace("docker.loxon.eu/", "");
-			final Matcher matcher = pattern.matcher(requestName);
-			String repo = "";
-			String imageName = "";
-			String tag = "";
-			while (matcher.find()) {
-				try {
-					repo = matcher.group(1);
-					imageName = matcher.group(2);
-					tag = matcher.group(3);
-				} catch (final Exception e) {
-				}
-			}
-			if (!StringUtils.isEmpty(repo) && !StringUtils.isEmpty(imageName) && !StringUtils.isEmpty(tag)) {
-				delete("curl -k -L -u " + configService.getString("GERRIT_USER") + ":" + configService.getString("GERRIT_PWD")
-						+ " -X DELETE --header 'Accept: text/plain' https://docker.loxon.eu/api/repositories/" + repo + "/" + imageName + "/tags/" + tag);
-				return "success! repository: '" + repo + "' ; image: '" + imageName + "' ; tag: '" + tag + "'";
-			} else {
-				return "Invalid image name! Right image format: repositoryName/imageName:tag";
-			}
-		}
-		return "Invalid request! Please add \"name\" query parameter!";
 	}
 
 	public void deleteStack(final String name) {

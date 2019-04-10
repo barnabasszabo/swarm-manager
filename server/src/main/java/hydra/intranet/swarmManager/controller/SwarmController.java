@@ -22,11 +22,6 @@ public class SwarmController extends BaseController {
 		return swarmMgmService.getFreePort(from, to) + "";
 	}
 
-	@GetMapping("/delete/image")
-	public String deleteImageFromRegistry(@RequestParam(name = "name", required = false) final String name) {
-		return swarmMgmService.deleteImageFromRegistry(name);
-	}
-
 	@GetMapping("/delete/stack")
 	public String deleteStack(@RequestParam(name = "name", required = false) final String name) {
 		swarmMgmService.deleteStack(name);

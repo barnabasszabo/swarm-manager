@@ -10,14 +10,15 @@ RUN apk update \
 COPY .ssh /root/.ssh
 RUN chmod -R 700 /root/.ssh
 
+COPY nginx_proxy_refresh.sh /opt/nginx_proxy_refresh.sh
 COPY cmd.sh /opt/cmd.sh
 
 # Add config
 COPY nginx/default.conf /etc/nginx/conf.d/
 
-# add deployment
-COPY dist/webapp /usr/share/nginx/html
-
-EXPOSE 22 80
+EXPOSE 22 80 443
 
 CMD /opt/cmd.sh
+
+# add deployment
+COPY dist/webapp /usr/share/nginx/html

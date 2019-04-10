@@ -7,7 +7,7 @@
             <p-panel [header]="linkGroup.displayName">
               <ul class="task-list-container">
                 <li *ngFor="let link of linkGroup.links">
-                  <a [href]="link.href" target="_blank" [innerHTML]="link.value | keepHtml"></a>
+                  <a [href]="link.href" [innerHTML]="link.value | keepHtml"></a>
                 </li>
               </ul>
             </p-panel>
@@ -131,7 +131,7 @@
                   <p-card title="{{task.serviceName}}" subtitle="{{task.task.Spec.ContainerSpec.Image | dockerImage}}" class="docker-task">
                     <div class="ports" *ngIf="task.ports">
                       <span class="port" *ngFor="let port of task.ports">{{port.Protocol}}/
-                        <a [href]="'http://' + host + ':' + port.PublishedPort" target="_blank">{{port.PublishedPort}}</a>
+                        <a [href]="'http://' + host + ':' + port.PublishedPort">{{port.PublishedPort}}</a>
                       </span>
                     </div>
                     <div class="clearfix">
