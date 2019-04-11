@@ -9,7 +9,8 @@ services:
         loxon.pool: "mycat1" # Milyen csoportba fog tartozni, a felületen a csoportnál megadott pattern-re illeszkedjen
         loxon.cleanEmail: "PROJECT_EMAIL@loxon.eu" # Ha töröl a rendszer egy környezetet, akkor ide jelzi, hogy miért
         loxon.priority: 70 # 0 és 100 között. Ha a területen túllógnak az ecosystem-ek, akkor a legalacsonyabbakat törli
-        loxon.dnsconfurl: "http://repo.intranet.loxon.eu/repository/COMMON-RAW/test/test-location.conf"
+        loxon.dnsconfurl: "http://repo.intranet.loxon.eu/repository/COMMON-RAW/test/test-location.conf" # Ha van ilyen label, akkor a DNS-ben létrehozza az ecosystem nevét (pl: myecosystem.loxon.swarm), és az nginx-ben létre is hozza. Location beállítása az itt megadott url-en lévő conf file-ban van ,amit letölt, és beszúrja.
+        loxon.ttl: 3600 # Percben mért TTL érték. Ha letelt az érték, a környezet automatikusan törlődik
 
       # Resource definíció kötelező minden containerre. Limit és Reserved értékek között 10% lehet csak!
       resources:
