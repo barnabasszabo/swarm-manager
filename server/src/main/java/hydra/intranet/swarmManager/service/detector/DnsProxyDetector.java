@@ -46,7 +46,7 @@ public class DnsProxyDetector extends AbstractDetector implements IDetector {
 							.replace("ECO-NAME", eco.getName());
 					try {
 						execService.exec(cmd);
-						log.info("DNS registration command is: {}", cmd);
+						// log.info("DNS registration command is: {}", cmd);
 					} catch (Exception e1) {
 						log.error("DNS registration command error {}", cmd, e1);
 					}
